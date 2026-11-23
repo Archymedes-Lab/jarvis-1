@@ -1,0 +1,29 @@
+# The watchdog that lives outside the daemon.
+#
+# Every other outage check runs inside `jarvis serve`, which means none of them
+# can report the one failure that matters most: the daemon itself being gone.
+# This unit is deliberately separate, unprivileged, and short-lived — it looks
+# at the unit state and at whether snapshots are still being written, restarts
+# jarvis if not, and mails either way.
+#
+# Installed as a *user* unit so it needs no root. Restarting the system-scoped
+# jarvis.service is the one privileged verb it needs, and install.sh grants
+# exactly that through a narrow sudoers rule.
+
+[Unit]
+Description=ARGUS-INSTINCT self-check — is the monitor actually monitoring?
+# Do not run it while it is already running.
+RefuseManualStart=no
+
+[Service]
+Type=oneshot
+WorkingDirectory=@REPO_ROOT@
+ExecStart=/usr/bin/python3 -m jarvis selfcheck --restart --quiet
+
+# A non-zero exit means "jarvis was down" — that is a report, not a unit
+# failure, so it must not mark this unit failed and stop the cycle.
+SuccessExitStatus=0 1
+
+# Never let it hang forever holding the timer. The retry for a failed run is
+# simply the next timer tick two minutes later.
+TimeoutStartSec=180

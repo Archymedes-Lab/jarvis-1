@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-procs-baseline"
+description = "Enables the procs_baseline command without any pre-configured scope."
+commands.allow = ["procs_baseline"]
+
+[[permission]]
+identifier = "deny-procs-baseline"
+description = "Denies the procs_baseline command without any pre-configured scope."
+commands.deny = ["procs_baseline"]

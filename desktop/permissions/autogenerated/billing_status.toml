@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-billing-status"
+description = "Enables the billing_status command without any pre-configured scope."
+commands.allow = ["billing_status"]
+
+[[permission]]
+identifier = "deny-billing-status"
+description = "Denies the billing_status command without any pre-configured scope."
+commands.deny = ["billing_status"]

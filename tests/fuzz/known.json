@@ -1,0 +1,4 @@
+{
+ "about": "Open findings (docs/security/FUZZ-FINDINGS-2026-11-04.md). A run exits 0 when it finds only these; remove an entry when its fix lands so the fuzzer guards it.",
+ "signatures": []
+}

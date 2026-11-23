@@ -1,0 +1,25 @@
+name: Feature proposal
+description: Propose a user outcome and a way to measure it.
+title: "[Proposal]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and affected users
+      description: Describe the workflow and impact without private customer or incident details.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior and alternatives
+      description: Include safety boundaries, privacy effects and simpler alternatives.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: How would we verify the outcome?
+      description: Propose reproducible success and failure cases. Do not claim a guarantee from a score.
+    validations:
+      required: true

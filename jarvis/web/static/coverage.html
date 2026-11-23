@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>ARGUS-INSTINCT · Defense coverage</title>
+<style>
+  /* Dark is the default; [data-theme] is set by the script from the toggle or the system setting. */
+  :root {
+    --bg: #03050a; --panel: rgba(13, 19, 34, .46); --panel-hi: rgba(160, 200, 255, .10);
+    --line: rgba(150, 185, 240, .18); --edge: rgba(190, 220, 255, .30);
+    --ink: #eaf1ff; --ink-2: #aab8d4; --ink-3: #6f7e9a; --hover: rgba(140, 175, 235, .13);
+    --validated: #33e6d4; --claimed: #ffb648; --blind: #5b6a88; --regressed: #ff4d63;
+    --node: #cfe3ff; --shadow: 0 18px 50px rgba(0, 0, 0, .45); --tagshadow: 0 0 8px #000, 0 0 2px #000;
+    --sheet: rgba(6, 9, 16, .92); --glow: 0 0 12px rgba(51, 230, 212, .55);
+  }
+  :root[data-theme="light"] {
+    --bg: #edf1f7; --panel: rgba(255, 255, 255, .50); --panel-hi: rgba(255, 255, 255, .85);
+    --line: rgba(60, 85, 130, .16); --edge: rgba(255, 255, 255, .95);
+    --ink: #0f1b33; --ink-2: #3f4f6e; --ink-3: #6c7b96; --hover: rgba(40, 80, 150, .09);
+    --validated: #0a9d92; --claimed: #cf8508; --blind: #a3afc6; --regressed: #dd3148;
+    --node: #2a4c9e; --shadow: 0 18px 44px rgba(40, 60, 100, .16); --tagshadow: 0 0 8px #fff, 0 0 2px #fff;
+    --sheet: rgba(246, 248, 252, .94); --glow: 0 0 10px rgba(10, 157, 146, .35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 13px/1.45 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+  canvas#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; }
+  canvas#scene.dragging { cursor: grabbing; }
+  .num { font-variant-numeric: tabular-nums; }
+  /* Panels are panes of the same glass as the shell: translucent, blurred, lit along the top edge. */
+  .panel { position: fixed; border-radius: 16px; border: 1px solid var(--line);
+    background: linear-gradient(155deg, var(--panel-hi), transparent 42%), var(--panel);
+    backdrop-filter: blur(22px) saturate(150%); -webkit-backdrop-filter: blur(22px) saturate(150%);
+    box-shadow: var(--shadow), inset 0 1px 0 var(--edge), inset 0 0 0 1px rgba(255, 255, 255, .02);
+    transition: background .5s, border-color .5s, box-shadow .5s, opacity .8s; }
+
+  #head { top: 20px; left: 20px; padding: 16px 18px 14px; width: 330px; }
+  #head h1 { margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-2); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  #link { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: .12em; color: var(--ink-3); }
+  #link i { width: 7px; height: 7px; border-radius: 50%; background: var(--regressed); }
+  #link[data-state="stream"] i { background: var(--validated); box-shadow: var(--glow); animation: beat 1.6s ease-in-out infinite; }
+  #link[data-state="poll"] i { background: var(--claimed); }
+  @keyframes beat { 50% { transform: scale(1.5); opacity: .55; } }
+  #hero { display: flex; align-items: baseline; gap: 10px; margin: 10px 0 2px; }
+  #hero b { font-size: 46px; line-height: 1; font-weight: 650; letter-spacing: -.02em;
+    background: linear-gradient(180deg, var(--ink), var(--validated) 160%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #hero span { color: var(--ink-2); }
+  #sub { color: var(--ink-3); margin-bottom: 12px; }
+  #bar { display: flex; height: 8px; gap: 2px; margin-bottom: 12px; }
+  #bar i { display: block; height: 100%; border-radius: 3px; min-width: 2px; transition: flex 1s; }
+  .legend { display: grid; grid-template-columns: 18px 1fr auto; gap: 6px 8px; align-items: center; }
+  .legend .n { color: var(--ink); font-weight: 600; }
+  .legend .l { color: var(--ink-2); }
+  .legend small { display: block; color: var(--ink-3); font-size: 11px; }
+  .glyph { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+  .glyph.validated { background: var(--validated); box-shadow: var(--glow); }
+  .glyph.claimed { border: 2px solid var(--claimed); }
+  .glyph.blind { border: 1px solid var(--blind); position: relative; }
+  .glyph.blind::after { content: ""; position: absolute; inset: 5px; background: var(--blind); border-radius: 50%; }
+  .glyph.regressed { background: repeating-linear-gradient(45deg, var(--regressed) 0 3px, transparent 3px 5px);
+    border: 1px solid var(--regressed); }
+  #meta { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--ink-3);
+    display: flex; justify-content: space-between; gap: 10px; }
+  #meta b { color: var(--ink); font-weight: 600; }
+
+  #tactics { top: 20px; right: 20px; width: 300px; padding: 14px 14px 10px; max-height: calc(100% - 330px); overflow: auto; }
+  #tactics h2, #feed h2 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; }
+  .tactic { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 6px 6px; border-radius: 8px;
+    cursor: pointer; border: 0; background: none; color: inherit; font: inherit; text-align: left; width: 100%; }
+  .tactic:hover, .tactic:focus-visible, .tactic.on { background: var(--hover); outline: none; }
+  .tactic .name { color: var(--ink); }
+  .tactic .count { color: var(--ink-3); }
+  .tactic .tbar { grid-column: 1 / -1; display: flex; gap: 2px; height: 5px; }
+  .tactic .tbar i { display: block; height: 100%; border-radius: 2px; }
+
+  #feed { left: 20px; bottom: 20px; width: 330px; padding: 14px 16px 12px; }
+  #feed ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+  #feed li { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; color: var(--ink-2);
+    white-space: nowrap; overflow: hidden; border-radius: 6px; padding: 0 4px; margin: 0 -4px; transition: background 1.6s, color 1.6s; }
+  #feed li.fired { background: var(--hover); color: var(--ink); transition: none; }
+  #feed li.fired .dot { box-shadow: var(--glow); transform: scale(1.5); }
+  #feed li span { overflow: hidden; text-overflow: ellipsis; }
+  #feed li time { color: var(--ink-3); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--node); transition: transform .6s, box-shadow .6s; }
+  .dot.failing, .dot.missing { background: var(--regressed); }
+  .dot.stale { background: var(--claimed); }
+  #health { display: flex; gap: 14px; margin-bottom: 10px; color: var(--ink-2); flex-wrap: wrap; }
+  #health b { color: var(--ink); }
+  #health .run b { color: var(--validated); }
+  #ingest, #linkage { color: var(--ink-3); font-size: 11px; margin-top: 8px; }
+  #linkage { margin-top: 2px; }
+
+  #uptime { right: 20px; bottom: 84px; width: 300px; padding: 14px 16px 12px; }
+  #uptime h2 { margin: 0 0 6px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; }
+  #uhero { display: flex; align-items: baseline; gap: 8px; }
+  #uhero b { font-size: 28px; line-height: 1.1; font-weight: 650; letter-spacing: -.02em; }
+  #uhero span { color: var(--ink-3); }
+  .strip { display: flex; gap: 1px; height: 14px; }
+  .strip i { display: block; flex: 1; border-radius: 2px; min-width: 2px; }
+  .strip i.unk { background: none; border: 1px dashed var(--blind); opacity: .6; }
+  #ustrip { margin: 8px 0 3px; }
+  #uaxis { display: flex; justify-content: space-between; color: var(--ink-3); font-size: 11px; margin-bottom: 10px; }
+  #uworst { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+  #uworst li { display: grid; grid-template-columns: 1fr 84px 44px; gap: 8px; align-items: center; color: var(--ink-2);
+    white-space: nowrap; }
+  #uworst li span { overflow: hidden; text-overflow: ellipsis; }
+  #uworst .strip { height: 9px; }
+  #uworst b { color: var(--ink); font-weight: 600; text-align: right; }
+  #unote { margin-top: 8px; color: var(--ink-3); font-size: 11px; }
+  #detail .strip { margin-top: 10px; }
+  #detail .axis { display: flex; justify-content: space-between; color: var(--ink-3); font-size: 11px; margin-top: 2px; }
+
+  #mode { top: 20px; left: 50%; transform: translateX(-50%); padding: 8px 16px; text-align: center; max-width: 440px;
+    pointer-events: none; }
+  #mode b { display: block; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; }
+  #mode span { display: block; color: var(--ink-3); font-size: 12px; margin-top: 2px; }
+  body[data-mode="uptime"] #head, body[data-mode="coverage"] #uptime { opacity: .55; }
+
+  #tools { right: 20px; bottom: 20px; padding: 6px; display: flex; gap: 4px; }
+  #tools button, #close, #tclose { background: none; border: 0; color: var(--ink-2); font: inherit; padding: 7px 11px;
+    border-radius: 10px; cursor: pointer; transition: background .2s, color .2s; }
+  #tools button:hover, #tools button[aria-pressed="true"], #close:hover, #tclose:hover {
+    background: var(--hover); color: var(--ink); }
+
+  #tip { position: fixed; pointer-events: none; padding: 9px 11px; max-width: 320px; display: none; z-index: 5;
+    border-radius: 12px; }
+  #tip .k { color: var(--ink-3); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  #tip .t { color: var(--ink); font-weight: 600; margin: 1px 0 3px; }
+  #tip .d { color: var(--ink-2); }
+
+  #detail { left: 50%; bottom: 20px; transform: translateX(-50%); width: min(560px, calc(100% - 740px));
+    min-width: 340px; padding: 14px 16px; display: none; }
+  #detail h3 { margin: 0 28px 2px 0; font-size: 15px; font-weight: 600; }
+  #detail .k { color: var(--ink-3); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+  #detail p { margin: 6px 0 0; color: var(--ink-2); }
+  #detail .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); font-size: 12px; }
+  #close { position: absolute; top: 8px; right: 8px; padding: 4px 9px; }
+
+  .tag { position: fixed; transform: translate(-50%, -50%); pointer-events: none; font-size: 10.5px;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap;
+    text-shadow: var(--tagshadow); transition: opacity .25s; }
+  .tag b { color: var(--ink); font-weight: 600; margin-left: 5px; letter-spacing: 0; }
+
+  #banner { top: 92px; left: 50%; transform: translateX(-50%); padding: 8px 14px; display: none;
+    border-color: var(--regressed); color: var(--ink); }
+
+  #table { inset: 20px; padding: 16px; display: none; z-index: 10; overflow: auto; background: var(--sheet); }
+  #table table { border-collapse: collapse; width: 100%; }
+  #table th, #table td { text-align: left; padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  #table th { color: var(--ink-3); font-weight: 600; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    position: sticky; top: -16px; background: var(--sheet); }
+  #table td { color: var(--ink-2); }
+  #table td:nth-child(2) { color: var(--ink); }
+  #tclose { position: sticky; top: 0; float: right; }
+
+  /* Not live: every panel but the banner loses its colour, like the scene behind it. */
+  body[data-dead] .panel:not(#banner), body[data-dead] .tag { filter: grayscale(1); opacity: .62; }
+  body[data-dead] #feed h2::after { content: " · last known"; }
+
+  @media (max-width: 1100px) { #tactics, #uptime { display: none; } #detail { width: calc(100% - 40px); bottom: 240px; } }
+  @media (max-width: 720px) { #feed { display: none; } #head { width: calc(100% - 40px); } #detail { bottom: 70px; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="scene" aria-label="Three-dimensional view of ARGUS-INSTINCT defense coverage. Use the table view for the same data as text."></canvas>
+
+<section class="panel" id="head">
+  <h1>Defense coverage <span id="link" data-state="down" role="status"><i></i><span id="linktext">connecting</span></span></h1>
+  <div id="hero"><b class="num" id="pct">–</b><span id="pctnote">of techniques have a detection that was made to fire</span></div>
+  <div id="sub">ATT&amp;CK techniques for Windows and Linux</div>
+  <div id="bar" role="img" aria-label="Share of techniques by level"></div>
+  <div class="legend" id="legend"></div>
+  <div id="meta"><span>Security score <b class="num" id="score">–</b></span><span id="scoreage"></span><span id="mapage"></span></div>
+</section>
+
+<nav class="panel" id="tactics" aria-label="Tactics"><h2>Tactics, in attack order</h2><div id="tlist"></div></nav>
+
+<section class="panel" id="feed">
+  <h2>Collectors, live</h2>
+  <div id="health"></div>
+  <ol id="runs"></ol>
+  <div id="ingest"></div>
+  <div id="linkage"></div>
+</section>
+
+<section class="panel" id="uptime" aria-label="Collector uptime">
+  <h2>Collector uptime, last 24 h</h2>
+  <div id="uhero"><b class="num" id="upct">–</b><span id="upnote">of collector time fresh</span></div>
+  <div id="ustrip"></div>
+  <div id="uaxis"><span>24 h ago</span><span>now</span></div>
+  <ol id="uworst"></ol>
+  <div id="unote"></div>
+</section>
+
+<div class="panel" id="mode" role="status" aria-live="polite"><b id="modename"></b><span id="modehint"></span></div>
+
+<div class="panel" id="tools">
+  <button data-mode="coverage">Coverage</button>
+  <button data-mode="uptime">Uptime</button>
+  <button data-mode="auto">Auto</button>
+  <button id="theme" title="Switch between light, dark and the system setting">Theme</button>
+  <button id="spin" aria-pressed="true">Rotate</button>
+  <button id="reset">Reset view</button>
+  <button id="showtable">Table</button>
+</div>
+
+<div class="panel" id="tip"></div>
+<section class="panel" id="detail" aria-live="polite"><button id="close" aria-label="Close">✕</button><div id="dbody"></div></section>
+<div class="panel" id="banner" role="status"></div>
+<section class="panel" id="table" aria-label="Coverage as a table"><button id="tclose">Close ✕</button><div id="tbody"></div></section>
+<div id="tags"></div>
+
+<script src="/static/session.js"></script>
+<script type="module" src="/static/coverage.js"></script>
+</body>
+</html>

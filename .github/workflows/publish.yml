@@ -1,0 +1,64 @@
+name: Publish release
+
+# Runs when a releaser publishes a signed draft (or, to roll back, by hand
+# with the tag of an earlier signed release). release/publish.py refuses
+# unless the files pass the content gate and SHA256SUMS.sig verifies against a
+# releaser key pinned in ARGUS_RELEASE_SIGNERS (an admin-only variable). It
+# then commits exactly the release files to the site's master, whose deploy
+# job checks them again, and reads the live site back.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Signed release tag to publish (an earlier one rolls back)"
+        required: true
+      rollback:
+        description: "Allow an equal or older release than the live one (a deliberate rollback)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      ARGUS_RELEASE_SIGNERS: ${{ vars.ARGUS_RELEASE_SIGNERS }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+      # The assets go to their own folder outside the checkout: the checkout
+      # already has a release/ folder (this tooling), and downloading into it
+      # mixed the tooling into the files under check (run 41138145511 refused
+      # v2026.10.30-2 for exactly that). gh release download fetches only the
+      # uploaded assets, never GitHub's "Source code" archives (no --archive).
+      - name: Download the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "$TAG" -R "$GITHUB_REPOSITORY" -D "$RUNNER_TEMP/release-assets"
+      # ases: push - release/publish.py commits the release to the site with this deploy key.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: chrisnkuno/archymedes-site
+          ref: master
+          path: site
+          ssh-key: ${{ secrets.SITE_DEPLOY_KEY }}
+      - name: 7-Zip (the gate opens the Windows Setup with 7z)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q 7zip
+      - name: Check and publish to the site
+        run: python3 release/publish.py --release "$RUNNER_TEMP/release-assets" --site site --tag "$TAG" ${{ inputs.rollback && '--rollback' || '' }}
+      - name: Read the live site back
+        run: python3 release/publish.py --readback --version "${TAG#v}" --timeout 1500

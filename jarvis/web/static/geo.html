@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARGUS-INSTINCT · GeoSecurity</title>
+<link href="https://cdn.jsdelivr.net/npm/cesium@1.121.1/Build/Cesium/Widgets/widgets.css" rel="stylesheet" integrity="sha384-ghEeMdcWWzRv/BPeUcX835vcKDGrxvROXisl/Btpv3GeekBUXTSPVcFJpI1Tcrgp" crossorigin="anonymous">
+<link href="/static/vendor/leaflet/leaflet.css" rel="stylesheet">
+<style>
+  :root { --bg:#05070d; --panel:rgba(8,14,26,.82); --line:#1c2c46; --fg:#cde3ff;
+          --dim:#6f89b3; --ok:#39d98a; --low:#7db4ff; --high:#ffb347; --crit:#ff5c72; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+    font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  #globe { position:fixed; inset:0; }
+  #globe .cesium-widget-credits, .cesium-viewer-bottom { display:none !important; }
+  #map2d { position:fixed; inset:0; display:none; background:#0a1424; z-index:1; }
+  #map2d.leaflet-container { font:inherit; }
+  #modebar { display:grid; grid-template-columns:repeat(4,1fr); gap:4px;
+    background:rgba(4,8,16,.5); border:1px solid var(--line); border-radius:8px; padding:4px; }
+  #modebar button { background:transparent; color:var(--dim); border:1px solid transparent;
+    border-radius:6px; padding:5px 4px; cursor:pointer; font:inherit; font-size:11px;
+    letter-spacing:.04em; }
+  #modebar button.on { color:var(--fg); background:#12203a; border-color:var(--line); }
+  #mebtn { display:none; width:100%; margin-top:6px;
+    background:#0a1424; color:var(--fg); border:1px solid var(--line);
+    border-radius:6px; padding:6px 10px; cursor:pointer; font:inherit; font-size:11px; }
+  #tilewarn { position:fixed; left:12px; bottom:18px; z-index:500; display:none;
+    max-width:min(420px,80vw); background:rgba(8,14,26,.9); border:1px solid var(--high);
+    color:var(--high); border-radius:8px; padding:8px 12px; font-size:11px; }
+  #map2dfallback { position:fixed; inset:0; display:none; align-items:center;
+    justify-content:center; color:var(--dim); text-align:center; padding:24px; z-index:1; }
+  .zbtn { background:transparent; color:var(--crit); border:1px solid var(--line);
+    border-radius:6px; padding:1px 8px; cursor:pointer; font:inherit; font-size:11px; }
+  .zrow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:3px 0; }
+  #fallback { position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    color:var(--dim); text-align:center; padding:24px; }
+  #panel { position:fixed; top:0; right:0; width:min(380px,92vw); height:100%; overflow:auto;
+    z-index:1000;
+    background:var(--panel); border-left:1px solid var(--line); backdrop-filter:blur(6px);
+    padding:18px 18px 40px; }
+  h1 { font-size:15px; letter-spacing:.14em; margin:0 0 2px; }
+  .sub { color:var(--dim); font-size:11px; letter-spacing:.08em; margin-bottom:16px; }
+  .card { border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:12px;
+    background:rgba(4,8,16,.5); }
+  .card h2 { font-size:10px; letter-spacing:.16em; color:var(--dim); margin:0 0 8px;
+    text-transform:uppercase; }
+  .row { display:flex; justify-content:space-between; gap:10px; padding:3px 0; }
+  .row .k { color:var(--dim); } .row .v { text-align:right; }
+  .pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px;
+    border:1px solid currentColor; }
+  .ok{color:var(--ok)} .low{color:var(--low)} .high{color:var(--high)} .crit{color:var(--crit)}
+  .dim{color:var(--dim)}
+  .meter { height:6px; border-radius:3px; background:#12203a; overflow:hidden; margin-top:6px; }
+  .meter>i { display:block; height:100%; background:linear-gradient(90deg,var(--low),var(--ok)); }
+  .sig { font-size:11px; color:var(--dim); padding:2px 0; }
+  a.back { color:var(--dim); text-decoration:none; font-size:11px; }
+  .anom { border-left:3px solid var(--high); padding:6px 8px; margin:6px 0; background:rgba(255,179,71,.07); }
+  .anom.crit,.anom.high{border-color:var(--crit)}
+</style>
+</head>
+<body>
+<div id="globe"></div>
+<div id="map2d"></div>
+<div id="map2dfallback">The street map needs its tile library (offline?).<br>The 3D globe and the status panel still work.</div>
+<div id="tilewarn"></div>
+<div id="fallback">The globe needs internet for map imagery.<br>The GeoSecurity status is on the right.</div>
+<div id="panel">
+  <h1>ARGUS-INSTINCT // GEOSECURITY</h1>
+  <div class="sub"><a class="back" href="/">‹ dashboard</a> · <a class="back" href="/world">world watch ›</a> · <span id="ts">…</span></div>
+  <div class="card"><h2>Map</h2>
+    <div id="modebar" role="tablist" aria-label="map mode">
+      <button data-mode="street" role="tab">Street</button>
+      <button data-mode="satellite" role="tab">Satellite</button>
+      <button data-mode="hybrid" role="tab">Hybrid</button>
+      <button data-mode="globe" role="tab">3D Globe</button>
+    </div>
+    <button id="mebtn" title="return to me">⌖ return to me</button>
+  </div>
+  <div class="card"><h2>Location</h2><div id="loc"></div>
+    <div class="meter"><i id="confbar" style="width:0"></i></div>
+    <div id="signals" style="margin-top:6px"></div>
+    <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">
+      <div style="font-size:10px;letter-spacing:.14em;color:var(--dim);margin-bottom:6px">SET MY LOCATION</div>
+      <div style="display:flex;gap:6px">
+        <input id="place" placeholder="place, e.g. Norrsken Kigali"
+          style="flex:1;min-width:0;background:#0a1424;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:6px 8px;font:inherit">
+        <button id="findbtn" style="background:#12203a;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer">find</button>
+      </div>
+      <div id="geohint" class="sig dim" style="margin-top:6px">or click the map to drop a pin, then confirm.</div>
+      <div id="confirm" style="display:none;margin-top:8px">
+        <button id="setbtn" style="background:#123a2a;color:var(--ok);border:1px solid #1f6b4a;border-radius:6px;padding:6px 10px;cursor:pointer">set as my location</button>
+        <button id="clearbtn" style="background:transparent;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer">clear</button>
+      </div>
+    </div>
+  </div>
+  <div class="card"><h2>Devices</h2><div id="devices"></div></div>
+  <div class="card"><h2>Trusted zones</h2><div id="zones"></div>
+    <div style="margin-top:8px;border-top:1px solid var(--line);padding-top:8px">
+      <div style="font-size:10px;letter-spacing:.14em;color:var(--dim);margin-bottom:6px">ZONES: HOME · WORKPLACE · CUSTOM</div>
+      <div style="display:flex;gap:6px">
+        <input id="zonename" placeholder="name, e.g. HOME"
+          style="flex:1;min-width:0;background:#0a1424;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:6px 8px;font:inherit">
+        <input id="zoneradius" type="number" min="20" max="50000" placeholder="m" value="200" title="radius in metres"
+          style="width:70px;background:#0a1424;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:6px 8px;font:inherit">
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button id="zonehome" title="fill in HOME preset"
+          style="flex:1;background:#0a1424;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;cursor:pointer;font:inherit;font-size:11px">⌂ home</button>
+        <button id="zonework" title="fill in WORKPLACE preset"
+          style="flex:1;background:#0a1424;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;cursor:pointer;font:inherit;font-size:11px">⚒ workplace</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <input id="zoneaddr" placeholder="address (optional) — type + find, or pin the map"
+          style="flex:1;min-width:0;background:#0a1424;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:6px 8px;font:inherit">
+        <button id="zonefind"
+          style="background:#12203a;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;font:inherit">find</button>
+      </div>
+      <button id="zonesave" style="margin-top:6px;width:100%;background:#123a2a;color:var(--ok);border:1px solid #1f6b4a;border-radius:6px;padding:6px 10px;cursor:pointer">save pin as zone</button>
+      <div id="zonehint" class="sig dim" style="margin-top:4px">drop a pin first (click the map), then save.</div>
+    </div>
+  </div>
+  <div class="card"><h2>Geo anomalies</h2><div id="anoms"></div></div>
+  <div class="card"><h2>Imagery</h2><div id="imagery"></div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/cesium@1.121.1/Build/Cesium/Cesium.js" integrity="sha384-f7+jI8YJcjiJsv+liNYcR4pk6e/aGirOT46orv2YgNoIr0AVeP759tOx6vX4rv2p" crossorigin="anonymous"></script>
+<script src="/static/vendor/leaflet/leaflet.js"></script>
+<script src="/static/session.js"></script>
+<script src="/static/geo.js"></script>
+</body>
+</html>

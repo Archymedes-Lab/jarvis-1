@@ -1,0 +1,6 @@
+# Development scanners only. Official registry releases checked 2026-11-09;
+# all releases at least seven days old. Runtime/build requirements are separate.
+bandit==1.9.4
+semgrep==1.183.0
+pip-audit==2.10.1
+z3-solver==5.3.3.0

@@ -1,0 +1,28 @@
+#!/bin/sh
+# argus-server: purge deletes what Argus recorded, its settings and accounts.
+set -e
+
+remove_account() {
+  id "$1" >/dev/null 2>&1 || return 0
+  if ! userdel "$1"; then
+    # The service is stopped by now (prerm); a leftover process of the account
+    # (a CLI run, a child that outlived the unit) keeps userdel from working.
+    pkill -KILL -u "$1" 2>/dev/null || true
+    sleep 1
+    userdel "$1" || echo "argus-server: could not remove the $1 account; remove it with: userdel $1" >&2
+  fi
+}
+
+case "$1" in
+  purge)
+    # Stop anything still writing there before deleting it.
+    for account in argus argus-net; do
+      if id "$account" >/dev/null 2>&1; then pkill -KILL -u "$account" 2>/dev/null || true; fi
+    done
+    sleep 1
+    rm -rf /var/lib/argus /var/lib/argus-net /etc/argus
+    remove_account argus-net
+    remove_account argus
+    ;;
+esac
+exit 0

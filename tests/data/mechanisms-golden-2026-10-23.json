@@ -1,0 +1,1100 @@
+{
+ "all_jobs": {
+  "arena": [
+   3600,
+   "Adversarial self-validation"
+  ],
+  "asep": [
+   3600,
+   "Autostart points"
+  ],
+  "attackmap": [
+   21600,
+   "ATT&CK coverage map"
+  ],
+  "audio": [
+   300,
+   "Audio endpoints & routes"
+  ],
+  "auditd": [
+   7200,
+   "Syscall interception posture"
+  ],
+  "backdoor": [
+   3600,
+   "Backdoors & access grants"
+  ],
+  "boot": [
+   21600,
+   "Startup analysis"
+  ],
+  "bridge": [
+   45,
+   "Windows bridge reachability"
+  ],
+  "bruteforce": [
+   3600,
+   "Brute force & auth failures"
+  ],
+  "canary": [
+   300,
+   "Canary tokens & tripwires"
+  ],
+  "containers": [
+   900,
+   "Container privilege and exposure inventory"
+  ],
+  "control": [
+   1800,
+   "Control surfaces"
+  ],
+  "controls": [
+   300,
+   "Brightness & control devices"
+  ],
+  "coverage": [
+   600,
+   "Self-audit & blind spots"
+  ],
+  "deep_hidden": [
+   86400,
+   "Deep process cross-view scan"
+  ],
+  "dotnet": [
+   1800,
+   ".NET runtime hijack points"
+  ],
+  "evasion": [
+   1200,
+   "Evasion & kernel integrity"
+  ],
+  "evidence": [
+   900,
+   "Evidence vault & anchors"
+  ],
+  "feeds": [
+   3600,
+   "Bulk indicator feeds"
+  ],
+  "firewall": [
+   2400,
+   "Firewall & inbound"
+  ],
+  "gaps": [
+   21600,
+   "Detection coverage vs current intel"
+  ],
+  "geo": [
+   900,
+   "Device location & geofencing"
+  ],
+  "hidden": [
+   300,
+   "Hidden processes"
+  ],
+  "history_verify": [
+   86400,
+   "Event history verification"
+  ],
+  "hunt": [
+   1800,
+   "Threat-intel indicator hunt"
+  ],
+  "identity": [
+   900,
+   "Who is acting on this machine"
+  ],
+  "implant": [
+   3600,
+   "Interception & boundary bypass"
+  ],
+  "input": [
+   300,
+   "Synthetic input"
+  ],
+  "input_hook": [
+   45,
+   "Input monitor watchdog"
+  ],
+  "intel": [
+   18000,
+   "Threat-intelligence refresh"
+  ],
+  "internet": [
+   120,
+   "Internet apps & incoming traffic"
+  ],
+  "intrusion": [
+   5400,
+   "Intrusion artifacts"
+  ],
+  "ledger": [
+   1800,
+   "Unresolved & recurring alerts"
+  ],
+  "memscan": [
+   7200,
+   "Memory & instruction level"
+  ],
+  "model": [
+   1800,
+   "Local model availability"
+  ],
+  "native": [
+   60,
+   "Native sensor ingestion"
+  ],
+  "netwatch": [
+   300,
+   "Network & wireless state"
+  ],
+  "pixel": [
+   3600,
+   "Screen capture & tracking pixels"
+  ],
+  "posture": [
+   7200,
+   "Windows security posture"
+  ],
+  "preos": [
+   1800,
+   "Pre-OS boot integrity"
+  ],
+  "privacy": [
+   300,
+   "Microphone & camera privacy seal"
+  ],
+  "report": [
+   300,
+   "Daily advisory & change digests"
+  ],
+  "resources": [
+   300,
+   "Resource pressure"
+  ],
+  "rust_mirror": [
+   1200,
+   "Independent evidence mirror"
+  ],
+  "scan": [
+   60,
+   "Processes & network"
+  ],
+  "secrets": [
+   43200,
+   "Plaintext credentials"
+  ],
+  "sniffing": [
+   1800,
+   "Packet capture"
+  ],
+  "spy": [
+   5400,
+   "Spyware & capabilities"
+  ],
+  "storage": [
+   1800,
+   "Disk headroom & WSL image"
+  ],
+  "sysmon": [
+   600,
+   "Sysmon telemetry"
+  ],
+  "sysmon_linux": [
+   600,
+   "Sysmon for Linux (eBPF)"
+  ],
+  "toolchain": [
+   3600,
+   "Developer toolchain trust"
+  ],
+  "verify": [
+   86400,
+   "Code verification (properties and models)"
+  ],
+  "watchdogs": [
+   120,
+   "Watchdog mutual supervision"
+  ],
+  "webshell": [
+   21600,
+   "Web shells"
+  ],
+  "world": [
+   900,
+   "World conflict reports"
+  ],
+  "wsl": [
+   300,
+   "WSL trust boundary"
+  ]
+ },
+ "areas": [
+  [
+   "Active threats",
+   [
+    "hunt",
+    "sysmon",
+    "sysmon_linux",
+    "memscan",
+    "hidden",
+    "deep_hidden",
+    "evasion",
+    "intrusion",
+    "webshell",
+    "input",
+    "input_hook",
+    "scan"
+   ]
+  ],
+  [
+   "OS hardening",
+   [
+    "posture",
+    "firewall",
+    "implant",
+    "auditd",
+    "wsl"
+   ]
+  ],
+  [
+   "Persistence & access",
+   [
+    "control",
+    "asep",
+    "boot",
+    "backdoor",
+    "identity",
+    "bruteforce",
+    "dotnet"
+   ]
+  ],
+  [
+   "Data & privacy",
+   [
+    "secrets",
+    "spy",
+    "pixel",
+    "sniffing",
+    "geo",
+    "privacy"
+   ]
+  ],
+  [
+   "Network",
+   [
+    "internet",
+    "netwatch"
+   ]
+  ],
+  [
+   "Developer toolchain",
+   [
+    "toolchain"
+   ]
+  ],
+  [
+   "Monitoring",
+   [
+    "coverage",
+    "bridge",
+    "watchdogs",
+    "native",
+    "arena",
+    "rust_mirror",
+    "evidence",
+    "canary",
+    "history_verify",
+    "verify"
+   ]
+  ]
+ ],
+ "broker_scripts": {
+  "inputaudit": "inputaudit.ps1",
+  "internet": "internetwatch.ps1",
+  "memscan": "memscan.ps1",
+  "posture": "posture.ps1",
+  "sysmon_policy": "sysmon_policy.ps1",
+  "sysmon_pressure": "sysmon_pressure.ps1",
+  "vault": "vault.ps1"
+ },
+ "bulk": [
+  "evidence",
+  "world",
+  "feeds",
+  "rust_mirror",
+  "history_verify",
+  "verify"
+ ],
+ "dependencies": {
+  "native-sensor": [
+   "native",
+   "sysmon"
+  ],
+  "scheduler": [
+   "scan",
+   "bridge",
+   "netwatch"
+  ],
+  "windows-bridge": [
+   "firewall",
+   "control",
+   "asep",
+   "spy",
+   "intrusion",
+   "evasion",
+   "posture",
+   "backdoor",
+   "implant",
+   "bruteforce",
+   "input",
+   "input_hook",
+   "sysmon"
+  ]
+ },
+ "fast": [
+  "bridge",
+  "input_hook",
+  "scan",
+  "native",
+  "watchdogs"
+ ],
+ "governed": [
+  "arena",
+  "attackmap",
+  "feeds",
+  "gaps",
+  "geo",
+  "history_verify",
+  "hunt",
+  "intel",
+  "intrusion",
+  "memscan",
+  "model",
+  "pixel",
+  "posture",
+  "rust_mirror",
+  "secrets",
+  "spy",
+  "toolchain",
+  "verify",
+  "webshell",
+  "world"
+ ],
+ "isolated": [
+  "native"
+ ],
+ "job_commands": {
+  "arena": "arena suite",
+  "asep": "asep",
+  "attackmap": "attack",
+  "audio": "audio",
+  "auditd": "auditd",
+  "backdoor": "backdoor",
+  "boot": "boot",
+  "bridge": "coverage",
+  "bruteforce": "bruteforce",
+  "canary": "canary status",
+  "containers": "containers",
+  "control": "control",
+  "controls": "control",
+  "coverage": "coverage",
+  "deep_hidden": "hidden --deep",
+  "dotnet": "dotnet",
+  "evasion": "evasion",
+  "evidence": "broker status",
+  "feeds": "feeds",
+  "firewall": "firewall",
+  "gaps": "gaps",
+  "geo": "geo status",
+  "hidden": "hidden",
+  "history_verify": "timeline status",
+  "hunt": "hunt",
+  "identity": "impersonation",
+  "implant": "implant",
+  "input": "inputwatch",
+  "input_hook": "inputwatch",
+  "intel": "intel",
+  "internet": "netwatch",
+  "intrusion": "intrusion",
+  "ledger": "outstanding",
+  "memscan": "memscan",
+  "model": "ask model status",
+  "native": "timeline status",
+  "netwatch": "netwatch",
+  "pixel": "pixel",
+  "posture": "posture",
+  "preos": "preos",
+  "privacy": "privacy audit",
+  "report": "alert",
+  "resources": "status",
+  "rust_mirror": "status",
+  "scan": "scan",
+  "secrets": "secrets",
+  "sniffing": "sniffing",
+  "spy": "spy",
+  "sysmon": "sysmon",
+  "sysmon_linux": "sysmon-linux",
+  "toolchain": "toolchain",
+  "verify": "status",
+  "watchdogs": "selfcheck",
+  "webshell": "webshell",
+  "world": "geo world",
+  "wsl": "timeline wsl-boundary"
+ },
+ "linux_only": [
+  "auditd",
+  "containers",
+  "sysmon_linux"
+ ],
+ "non_evidence": [
+  "coverage",
+  "report"
+ ],
+ "order": [
+  "scan",
+  "bridge",
+  "input_hook",
+  "native",
+  "watchdogs",
+  "resources",
+  "internet",
+  "controls",
+  "audio",
+  "privacy",
+  "wsl",
+  "storage",
+  "preos",
+  "deep_hidden",
+  "hidden",
+  "firewall",
+  "control",
+  "dotnet",
+  "asep",
+  "spy",
+  "pixel",
+  "identity",
+  "intrusion",
+  "evasion",
+  "coverage",
+  "boot",
+  "hunt",
+  "gaps",
+  "intel",
+  "report",
+  "feeds",
+  "implant",
+  "netwatch",
+  "posture",
+  "backdoor",
+  "toolchain",
+  "ledger",
+  "input",
+  "memscan",
+  "secrets",
+  "bruteforce",
+  "sniffing",
+  "webshell",
+  "auditd",
+  "sysmon_linux",
+  "sysmon",
+  "attackmap",
+  "arena",
+  "geo",
+  "world",
+  "containers",
+  "model",
+  "rust_mirror",
+  "history_verify",
+  "verify",
+  "evidence",
+  "canary"
+ ],
+ "runners": [
+  "arena",
+  "asep",
+  "attackmap",
+  "audio",
+  "auditd",
+  "backdoor",
+  "boot",
+  "bridge",
+  "bruteforce",
+  "canary",
+  "containers",
+  "control",
+  "controls",
+  "coverage",
+  "deep_hidden",
+  "dotnet",
+  "evasion",
+  "evidence",
+  "feeds",
+  "firewall",
+  "gaps",
+  "geo",
+  "hidden",
+  "history_verify",
+  "hunt",
+  "identity",
+  "implant",
+  "input",
+  "input_hook",
+  "intel",
+  "internet",
+  "intrusion",
+  "ledger",
+  "memscan",
+  "model",
+  "native",
+  "netwatch",
+  "pixel",
+  "posture",
+  "preos",
+  "privacy",
+  "report",
+  "resources",
+  "rust_mirror",
+  "scan",
+  "secrets",
+  "sniffing",
+  "spy",
+  "storage",
+  "sysmon",
+  "sysmon_linux",
+  "toolchain",
+  "verify",
+  "watchdogs",
+  "webshell",
+  "world",
+  "wsl"
+ ],
+ "specs": {
+  "arena": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "asep": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "attackmap": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 21600,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "audio": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "auditd": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 7200,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "backdoor": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "boot": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 21600,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "bridge": {
+   "criticality": "high",
+   "deps": [
+    "scheduler"
+   ],
+   "interval": 45,
+   "retries": 3,
+   "tier": 1,
+   "timeout": 30.0
+  },
+  "bruteforce": {
+   "criticality": "medium",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "canary": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "containers": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 900,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 90.0
+  },
+  "control": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "controls": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "coverage": {
+   "criticality": "high",
+   "deps": [],
+   "interval": 600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 60.0
+  },
+  "deep_hidden": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 86400,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "dotnet": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "evasion": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 1200,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 120.0
+  },
+  "evidence": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 900,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 90.0
+  },
+  "feeds": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "firewall": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 2400,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 240.0
+  },
+  "gaps": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 21600,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "geo": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 900,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 90.0
+  },
+  "hidden": {
+   "criticality": "high",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "history_verify": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 86400,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "hunt": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "identity": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 900,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 90.0
+  },
+  "implant": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "input": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "input_hook": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 45,
+   "retries": 3,
+   "tier": 1,
+   "timeout": 30.0
+  },
+  "intel": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 18000,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "internet": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 120,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "intrusion": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 5400,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "ledger": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "memscan": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 7200,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "model": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "native": {
+   "criticality": "critical",
+   "deps": [
+    "native-sensor"
+   ],
+   "interval": 60,
+   "retries": 3,
+   "tier": 0,
+   "timeout": 45.0
+  },
+  "netwatch": {
+   "criticality": "high",
+   "deps": [
+    "scheduler"
+   ],
+   "interval": 300,
+   "retries": 3,
+   "tier": 1,
+   "timeout": 45.0
+  },
+  "pixel": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "posture": {
+   "criticality": "high",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 7200,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "preos": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "privacy": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "report": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "resources": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "rust_mirror": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1200,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 120.0
+  },
+  "scan": {
+   "criticality": "high",
+   "deps": [
+    "scheduler"
+   ],
+   "interval": 60,
+   "retries": 3,
+   "tier": 1,
+   "timeout": 30.0
+  },
+  "secrets": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 43200,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "sniffing": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "spy": {
+   "criticality": "medium",
+   "deps": [
+    "windows-bridge"
+   ],
+   "interval": 5400,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "storage": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 1800,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 180.0
+  },
+  "sysmon": {
+   "criticality": "critical",
+   "deps": [
+    "windows-bridge",
+    "native-sensor"
+   ],
+   "interval": 600,
+   "retries": 3,
+   "tier": 0,
+   "timeout": 45.0
+  },
+  "sysmon_linux": {
+   "criticality": "critical",
+   "deps": [],
+   "interval": 600,
+   "retries": 3,
+   "tier": 0,
+   "timeout": 45.0
+  },
+  "toolchain": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 3600,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 300.0
+  },
+  "verify": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 86400,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "watchdogs": {
+   "criticality": "high",
+   "deps": [],
+   "interval": 120,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  },
+  "webshell": {
+   "criticality": "low",
+   "deps": [],
+   "interval": 21600,
+   "retries": 3,
+   "tier": 4,
+   "timeout": 300.0
+  },
+  "world": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 900,
+   "retries": 3,
+   "tier": 3,
+   "timeout": 90.0
+  },
+  "wsl": {
+   "criticality": "medium",
+   "deps": [],
+   "interval": 300,
+   "retries": 3,
+   "tier": 2,
+   "timeout": 60.0
+  }
+ },
+ "unscored": [
+  "gaps",
+  "intel",
+  "feeds",
+  "ledger",
+  "report",
+  "resources",
+  "controls",
+  "audio",
+  "attackmap",
+  "model",
+  "containers",
+  "preos",
+  "world"
+ ],
+ "windows_only": [
+  "asep",
+  "audio",
+  "boot",
+  "bridge",
+  "controls",
+  "dotnet",
+  "evasion",
+  "geo",
+  "input",
+  "input_hook",
+  "internet",
+  "intrusion",
+  "memscan",
+  "native",
+  "posture",
+  "preos",
+  "privacy",
+  "sysmon"
+ ]
+}

@@ -1,0 +1,52 @@
+[Unit]
+Description=Argus packet sensor - inbound connection attempts, headers only
+Documentation=https://www.archymedes.xyz/en/solutions/argus/
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+# Its own account: it cannot read what the argus account records.
+User=argus-net
+Group=argus-net
+Environment=HOME=/var/lib/argus-net
+WorkingDirectory=/
+# Opens one AF_PACKET socket with a kernel filter that keeps only new inbound
+# TCP connection attempts, ICMP and UDP, truncated to their headers: packet
+# payloads never reach this process. It then drops every capability.
+ExecStart=/opt/argus/bin/argus-server netsensor
+Restart=always
+RestartSec=5
+
+AmbientCapabilities=CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_RAW
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_PACKET AF_UNIX
+ProtectSystem=strict
+ReadWritePaths=/var/lib/argus-net
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+UMask=0027
+
+# Bounded: it is the first thing to give way, never the server's workload.
+Nice=5
+CPUWeight=20
+CPUQuota=15%
+MemoryHigh=96M
+MemoryMax=128M
+TasksMax=8
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+# Owner-maintained OpenSSH allowed_signers for namespace argus-security-review.
+# No reviewer is registered yet. An agent must not add its own key to approve work.
+# A registered signer attests to a review statement, never authorizes deployment.

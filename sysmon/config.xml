@@ -1,0 +1,119 @@
+<!--
+  Sysmon for Linux policy for jarvis's `sysmon-linux` collector.
+
+    sudo sysmon -accepteula -i <repo>/sysmon/config.xml   # first install
+    sudo sysmon -c          <repo>/sysmon/config.xml       # update in place
+
+  The default config records process create/terminate only. The rules in
+  jarvis/sysmon_linux.py also act on:
+
+    * NetworkConnect (3)  -> outbound egress + threat-intel correlation
+    * ProcessAccess (10)  -> one process reading another's memory (ptrace,
+                             process_vm_readv) — the Linux shape of cred dumping
+    * FileCreate (11)     -> writes to persistence / trust locations
+    * FileDelete (23/26)  -> log and shell-history removal
+
+  NetworkConnect and FileCreate are firehoses if left unfiltered on a busy
+  box, which is the opposite of what this machine needs — the journal already
+  rotates sysmon events out in a couple of hours. So: process events are kept
+  whole, NetworkConnect drops RFC1918 / link-local / loopback (LAN chatter is
+  not the signal), and FileCreate/FileDelete are narrowed to exactly the paths
+  the rules inspect. Net volume stays close to the process-only default.
+-->
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>SHA256</HashAlgorithms>
+
+  <EventFiltering>
+
+    <!-- Every exec, unfiltered. Every exit except the ones Sysmon cannot name:
+         an exit whose image is "<unknown process>" carries no identity (no
+         image, no command line), and those were 17,800 of 60,942 events in
+         30 minutes on 2026-11-02 (29% of the stream). Exits of named
+         processes stay. -->
+    <RuleGroup name="proc-create" groupRelation="or">
+      <ProcessCreate onmatch="exclude"></ProcessCreate>
+    </RuleGroup>
+    <RuleGroup name="proc-terminate" groupRelation="or">
+      <ProcessTerminate onmatch="exclude">
+        <Image condition="is">&lt;unknown process&gt;</Image>
+      </ProcessTerminate>
+    </RuleGroup>
+
+    <!-- Outbound connections, minus anything that stays on the local network. -->
+    <RuleGroup name="net-egress" groupRelation="or">
+      <NetworkConnect onmatch="exclude">
+        <DestinationIp condition="begin with">10.</DestinationIp>
+        <DestinationIp condition="begin with">127.</DestinationIp>
+        <DestinationIp condition="begin with">169.254.</DestinationIp>
+        <DestinationIp condition="begin with">192.168.</DestinationIp>
+        <DestinationIp condition="begin with">172.16.</DestinationIp>
+        <DestinationIp condition="begin with">172.17.</DestinationIp>
+        <DestinationIp condition="begin with">172.18.</DestinationIp>
+        <DestinationIp condition="begin with">172.19.</DestinationIp>
+        <DestinationIp condition="begin with">172.20.</DestinationIp>
+        <DestinationIp condition="begin with">172.21.</DestinationIp>
+        <DestinationIp condition="begin with">172.22.</DestinationIp>
+        <DestinationIp condition="begin with">172.23.</DestinationIp>
+        <DestinationIp condition="begin with">172.24.</DestinationIp>
+        <DestinationIp condition="begin with">172.25.</DestinationIp>
+        <DestinationIp condition="begin with">172.26.</DestinationIp>
+        <DestinationIp condition="begin with">172.27.</DestinationIp>
+        <DestinationIp condition="begin with">172.28.</DestinationIp>
+        <DestinationIp condition="begin with">172.29.</DestinationIp>
+        <DestinationIp condition="begin with">172.30.</DestinationIp>
+        <DestinationIp condition="begin with">172.31.</DestinationIp>
+        <DestinationIp condition="is">::1</DestinationIp>
+        <DestinationIp condition="begin with">fe80:</DestinationIp>
+        <DestinationIp condition="begin with">fc</DestinationIp>
+        <DestinationIp condition="begin with">fd</DestinationIp>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!-- Cross-process memory access. Low volume; keep it all bar sysmon itself. -->
+    <RuleGroup name="proc-access" groupRelation="or">
+      <ProcessAccess onmatch="exclude">
+        <SourceImage condition="contains">/opt/sysmon/sysmon</SourceImage>
+      </ProcessAccess>
+    </RuleGroup>
+
+    <!-- Raw block-device reads (disk imaging, filesystem bypass). Rare. -->
+    <RuleGroup name="raw-read" groupRelation="or">
+      <RawAccessRead onmatch="exclude"></RawAccessRead>
+    </RuleGroup>
+
+    <!-- Writes to persistence / trust locations — matches PERSIST_PATHS in
+         jarvis/sysmon_linux.py. -->
+    <RuleGroup name="persist-write" groupRelation="or">
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains">/.ssh/authorized_keys</TargetFilename>
+        <TargetFilename condition="contains">/etc/cron</TargetFilename>
+        <TargetFilename condition="contains">/var/spool/cron</TargetFilename>
+        <TargetFilename condition="contains">/etc/systemd/system/</TargetFilename>
+        <TargetFilename condition="contains">/.config/systemd/user/</TargetFilename>
+        <TargetFilename condition="contains">/etc/init.d/</TargetFilename>
+        <TargetFilename condition="end with">/etc/ld.so.preload</TargetFilename>
+        <TargetFilename condition="contains">/etc/sudoers</TargetFilename>
+        <TargetFilename condition="contains">/etc/profile.d/</TargetFilename>
+        <TargetFilename condition="end with">/etc/rc.local</TargetFilename>
+        <TargetFilename condition="end with">/.bashrc</TargetFilename>
+        <TargetFilename condition="end with">/.bash_profile</TargetFilename>
+        <TargetFilename condition="end with">/.profile</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <!-- Indicator removal: log and shell-history deletion. -->
+    <RuleGroup name="log-wipe" groupRelation="or">
+      <FileDelete onmatch="include">
+        <TargetFilename condition="contains">/var/log/</TargetFilename>
+        <TargetFilename condition="contains">/.bash_history</TargetFilename>
+      </FileDelete>
+    </RuleGroup>
+    <RuleGroup name="log-wipe-detected" groupRelation="or">
+      <FileDeleteDetected onmatch="include">
+        <TargetFilename condition="contains">/var/log/</TargetFilename>
+        <TargetFilename condition="contains">/.bash_history</TargetFilename>
+      </FileDeleteDetected>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>

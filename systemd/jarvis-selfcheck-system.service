@@ -1,0 +1,20 @@
+# The self-check, run as the daemon's own account once the daemon has one
+# (scripts/repair/install-service-user.sh installs it beside jarvis-selfcheck.timer
+# in /etc/systemd/system). It reads the daemon's store and alert settings, which
+# the owner's account can no longer read, and restarts jarvis.service through
+# the two-verb sudoers rule installed for the jarvis account.
+[Unit]
+Description=JARVIS self-check — is the monitor actually monitoring? (service account)
+
+[Service]
+Type=oneshot
+User=jarvis
+Group=jarvis
+Environment=HOME=/var/lib/jarvis
+UMask=0077
+WorkingDirectory=@REPO_ROOT@
+# @EXEC@: the running release's launcher (jarvis-release.py under python3 -I), or
+# python3 -m jarvis from a checkout the jarvis account can read.
+ExecStart=@EXEC@ selfcheck --restart --quiet
+SuccessExitStatus=0 1
+TimeoutStartSec=180

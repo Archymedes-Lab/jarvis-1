@@ -1,0 +1,24 @@
+# Review routing for trust-anchor paths. Either cofounder may merge after required CI passes;
+# the other cofounder's approval is optional (owner decision 2026-11-09).
+# Maintainers review external contributions; required independent security review still applies.
+/.github/                         @chrisnkuno @soniAineza4
+/release/                         @chrisnkuno @soniAineza4
+/hosted/licence-cloudflare/       @chrisnkuno @soniAineza4
+/hosted/notify-cloudflare/src/    @chrisnkuno @soniAineza4
+/jarvis/licensing/                @chrisnkuno @soniAineza4
+/docs/security/                   @chrisnkuno @soniAineza4
+/AGENTS.md                        @chrisnkuno @soniAineza4
+/LICENSE.txt                      @chrisnkuno @soniAineza4
+/THIRD-PARTY-NOTICES.txt          @chrisnkuno @soniAineza4
+
+/LICENSING.md                     @chrisnkuno @soniAineza4
+/NOTICE                           @chrisnkuno @soniAineza4
+/GOVERNANCE.md                     @chrisnkuno @soniAineza4
+/TRADEMARKS.md                     @chrisnkuno @soniAineza4
+/SECURITY.md                       @chrisnkuno @soniAineza4
+/CONTRIBUTING.md                   @chrisnkuno @soniAineza4
+/docs/open-source/                @chrisnkuno @soniAineza4
+/scripts/dev/publication_audit.py  @chrisnkuno @soniAineza4
+/COMMERCIAL.md                    @chrisnkuno @soniAineza4
+/docs/licensing/                  @chrisnkuno @soniAineza4
+/docs/commercial/CONTRIBUTOR-RIGHTS.md @chrisnkuno @soniAineza4

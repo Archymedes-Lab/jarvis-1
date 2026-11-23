@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARGUS-INSTINCT</title>
+<style id="ui">
+/* compiled from jarvis/web/styles/dashboard.css by scripts/dev/build_ui.sh; do not edit here */
+/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-leading:initial;--tw-font-weight:initial;--tw-tracking:initial;--tw-duration:initial;--tw-border-style:solid}}}@layer theme{:root,:host{--spacing:.25rem;--text-xs:.75rem;--text-xs--line-height:calc(1 / .75);--text-sm:.875rem;--text-sm--line-height:calc(1.25 / .875);--text-xl:1.25rem;--text-xl--line-height:calc(1.75 / 1.25);--font-weight-normal:400;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--tracking-normal:0em;--leading-tight:1.25;--leading-snug:1.375;--leading-normal:1.5;--leading-relaxed:1.625;--radius-sm:.25rem;--radius-md:.375rem;--radius-lg:.5rem;--radius-xl:.75rem;--radius-2xl:1rem;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--default-font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", InterVariable, "Inter", "Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;--default-mono-font-family:ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;--font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", InterVariable, "Inter", "Segoe UI Variable Display", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;--radius-card:22px;--radius-control:12px;--text-largetitle:34px;--text-title:28px}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;tab-size:4;line-height:1.5;font-family:var(--default-font-family,-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring:where(:not(iframe)){outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab, red, red)){::placeholder{color:color-mix(in oklab, currentcolor 50%, transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){appearance:button}::file-selector-button{appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}:root{--bg:#000;--panel:#1c1c1e;--panel2:#2c2c2e;--fill:#7676803d;--line:#54545899;--fg:#f5f5f7;--dim:#ebebf59e;--faint:#ebebf561;--accent:#2997ff;--accent-ink:#fff;--accent-soft:#2997ff29;--crit:#ff453a;--high:#ff9f0a;--med:#ffd60a;--low:#8e8e93;--ok:#30d158;--crit-soft:#ff453a26;--high-soft:#ff9f0a26;--med-soft:#ffd60a21;--ok-soft:#30d15826;--material:#161617b8;--hairline:#ffffff14;--lift:none;color-scheme:dark}@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#f5f5f7;--panel:#fff;--panel2:#fbfbfd;--fill:#7676801f;--line:#3c3c431f;--fg:#1d1d1f;--dim:#6e6e73;--faint:#86868b;--accent:#0071e3;--accent-soft:#0071e317;--crit:#e30000;--high:#c93400;--med:#a05a00;--low:#6e6e73;--ok:#1d8139;--crit-soft:#e3000012;--high-soft:#c9340014;--med-soft:#a05a0014;--ok-soft:#1d813917;--material:#fbfbfdcc;--hairline:#0000000f;--lift:0 1px 1px #00000005, 0 2px 12px #0000000a;color-scheme:light}}:root[data-theme=light]{--bg:#f5f5f7;--panel:#fff;--panel2:#fbfbfd;--fill:#7676801f;--line:#3c3c431f;--fg:#1d1d1f;--dim:#6e6e73;--faint:#86868b;--accent:#0071e3;--accent-soft:#0071e317;--crit:#e30000;--high:#c93400;--med:#a05a00;--low:#6e6e73;--ok:#1d8139;--crit-soft:#e3000012;--high-soft:#c9340014;--med-soft:#a05a0014;--ok-soft:#1d813917;--material:#fbfbfdcc;--hairline:#0000000f;--lift:0 1px 1px #00000005, 0 2px 12px #0000000a;color-scheme:light}:root[data-theme=dark]{color-scheme:dark}html{-webkit-text-size-adjust:100%;scroll-padding-top:128px}body{background-color:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-.009em;font-optical-sizing:auto;font-feature-settings:"cv11", "ss03";font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.47;overflow-x:hidden}a{color:var(--accent)}code,pre,kbd,.mono,.where,td.num{font-family:ui-monospace,SF Mono,Cascadia Code,Menlo,Consolas,monospace}::selection{background:var(--accent-soft)}:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px;border-radius:10px}h1,h2,h3{font-family:var(--font-display)}@media (prefers-reduced-motion:reduce){*,:before,:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}}@layer components{.spacer{flex:1}.meta{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint)}.faint{color:var(--faint)}.dim{color:var(--dim)}.note{margin-top:calc(var(--spacing) * .5);color:var(--dim);font-size:13px}.fine{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint)}.empty{padding-inline:calc(var(--spacing) * 6);padding-block:calc(var(--spacing) * 10);text-align:center;font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));color:var(--faint)}.scroll{overflow-x:auto}.vscroll{max-height:560px;overflow-y:auto}.pre{--tw-leading:var(--leading-relaxed);font-family:ui-monospace,SF Mono,Cascadia Code,Menlo,Consolas,monospace;font-size:12.5px;line-height:var(--leading-relaxed);word-break:break-all;white-space:pre-wrap;margin:0}button,select,input{border-radius:var(--radius-control);background-color:var(--fill);padding-inline:calc(var(--spacing) * 3.5);padding-block:calc(var(--spacing) * 2);--tw-font-weight:var(--font-weight-medium);font-size:13px;font-weight:var(--font-weight-medium);--tw-tracking:-.01em;letter-spacing:-.01em;color:var(--fg);transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.15s;transition-duration:.15s}button{cursor:pointer;color:var(--accent)}@media (hover:hover){button:hover{background-color:var(--accent-soft)}}button:active{scale:.98}button.on,button.primary{background:var(--accent);color:var(--accent-ink)}button.small{padding-inline:calc(var(--spacing) * 3);padding-block:calc(var(--spacing) * 1.5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}button.quiet{color:var(--dim);background-color:#0000}@media (hover:hover){button.quiet:hover{background-color:var(--fill);color:var(--fg)}}select{cursor:pointer}input:focus,select:focus{box-shadow:0 0 0 4px var(--accent-soft);outline:none}input[type=search]{width:calc(var(--spacing) * 80);padding-block:calc(var(--spacing) * 2.5);padding-right:calc(var(--spacing) * 4);padding-left:calc(var(--spacing) * 9);background:var(--fill) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 14px 50%;border-radius:3.40282e38px}kbd{border-radius:var(--radius-md);background-color:var(--fill);padding-inline:calc(var(--spacing) * 1.5);padding-block:calc(var(--spacing) * .5);color:var(--dim);font-size:11px}.segmented,.tabs{gap:calc(var(--spacing) * .5);border-radius:var(--radius-control);background-color:var(--fill);padding:calc(var(--spacing) * .5);flex-wrap:wrap;display:inline-flex}.segmented button,.tabs button{padding-inline:calc(var(--spacing) * 3);padding-block:calc(var(--spacing) * 1.5);color:var(--dim);background-color:#0000;border-radius:10px;font-size:12.5px}@media (hover:hover){:is(.segmented button,.tabs button):hover{color:var(--fg);background-color:#0000}}.segmented button.on,.tabs button.on{background:var(--panel);color:var(--fg);box-shadow:0 1px 2px #0000001f, 0 0 0 .5px var(--hairline)}.filters{align-items:center;gap:calc(var(--spacing) * 2);flex-wrap:wrap;display:flex}#filters:empty{display:none}.showmore{margin-top:calc(var(--spacing) * 3);width:100%}.linkbtn{border-radius:var(--radius-control);background-color:var(--fill);padding-inline:calc(var(--spacing) * 3.5);padding-block:calc(var(--spacing) * 2);--tw-font-weight:var(--font-weight-medium);font-size:13px;font-weight:var(--font-weight-medium)}header{z-index:20;align-items:center;gap:calc(var(--spacing) * 3);padding-inline:calc(var(--spacing) * 8);padding-block:calc(var(--spacing) * 3);background:var(--material);-webkit-backdrop-filter:saturate(180%)blur(20px);backdrop-filter:saturate(180%)blur(20px);box-shadow:inset 0 -1px 0 var(--line);flex-wrap:wrap;display:flex;position:sticky;top:0}.brand{margin-right:var(--spacing);--tw-leading:1;--tw-font-weight:var(--font-weight-semibold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:21px;line-height:1;font-weight:var(--font-weight-semibold);--tw-tracking:-.025em;letter-spacing:-.025em}.status{padding-inline:calc(var(--spacing) * 3);padding-block:calc(var(--spacing) * 1.5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-leading:1;--tw-font-weight:var(--font-weight-semibold);line-height:1;font-weight:var(--font-weight-semibold);white-space:nowrap;border-radius:3.40282e38px}.s-critical{background:var(--crit-soft);color:var(--crit)}.s-high{background:var(--high-soft);color:var(--high)}.s-medium{background:var(--med-soft);color:var(--med)}.s-low{background-color:var(--fill);color:var(--dim)}.s-ok{background:var(--ok-soft);color:var(--ok)}.live{align-items:center;gap:calc(var(--spacing) * 1.5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint);display:flex}.beat{background-color:var(--ok);border-radius:3.40282e38px;width:7px;height:7px}.beat.off{background-color:var(--faint)}.beat.on{animation:2s infinite beat}header .notify.on{background:var(--ok-soft);color:var(--ok)}.nav{z-index:19;gap:var(--spacing);padding-inline:calc(var(--spacing) * 8);padding-block:calc(var(--spacing) * 2);background:var(--material);-webkit-backdrop-filter:saturate(180%)blur(20px);backdrop-filter:saturate(180%)blur(20px);box-shadow:inset 0 -1px 0 var(--line);flex-wrap:wrap;display:flex;position:sticky;top:61px}.nav a{padding-inline:calc(var(--spacing) * 3.5);padding-block:calc(var(--spacing) * 2);--tw-leading:1;--tw-font-weight:var(--font-weight-medium);font-size:13px;line-height:1;font-weight:var(--font-weight-medium);color:var(--dim);border-radius:3.40282e38px}@media (hover:hover){.nav a:hover{background-color:var(--fill);color:var(--fg)}}.nav a .n{margin-left:calc(var(--spacing) * 1.5);--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);font-variant-numeric:tabular-nums}.nav a .n:empty{display:none}.alertbar,.results,.loadnotice{margin-inline:auto;margin-top:calc(var(--spacing) * 6);border-radius:var(--radius-card);width:calc(100% - 64px);max-width:1376px}.alertbar{align-items:center;gap:calc(var(--spacing) * 4);padding-inline:calc(var(--spacing) * 6);padding-block:calc(var(--spacing) * 4);background:var(--crit-soft);flex-wrap:wrap;display:flex}.alertbar b{min-width:calc(var(--spacing) * 8);--tw-leading:1;--tw-font-weight:var(--font-weight-bold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:30px;line-height:1;font-weight:var(--font-weight-bold);--tw-tracking:-.03em;letter-spacing:-.03em;color:var(--crit);font-variant-numeric:tabular-nums}.alertbar .what{--tw-font-weight:var(--font-weight-semibold);min-width:220px;font-size:15px;font-weight:var(--font-weight-semibold);flex:1}.alertbar .what small{margin-top:calc(var(--spacing) * .5);--tw-font-weight:var(--font-weight-normal);font-size:13px;font-weight:var(--font-weight-normal);color:var(--dim);display:block}.loadnotice{padding-inline:calc(var(--spacing) * 6);padding-block:calc(var(--spacing) * 3);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));background:var(--high-soft)}.loadnotice button{margin-left:calc(var(--spacing) * 3)}.results{background-color:var(--panel);box-shadow:var(--lift)}.results .head{align-items:center;gap:calc(var(--spacing) * 3);padding-inline:calc(var(--spacing) * 6);padding-block:calc(var(--spacing) * 4);--tw-font-weight:var(--font-weight-semibold);font-size:15px;font-weight:var(--font-weight-semibold);box-shadow:inset 0 -1px 0 var(--line);flex-wrap:wrap;display:flex}.results .head .meta{--tw-font-weight:var(--font-weight-normal);font-weight:var(--font-weight-normal)}.results ul{max-height:340px;padding:calc(var(--spacing) * 2);margin:0;list-style-type:none;overflow:auto}.results li{cursor:pointer;align-items:baseline;gap:calc(var(--spacing) * 3);border-radius:var(--radius-xl);padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 2.5);grid-template-columns:auto auto 1fr;display:grid}@media (hover:hover){.results li:hover{background-color:var(--fill)}}.results li .t{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.results li .d{color:var(--dim);font-size:13px}main{gap:calc(var(--spacing) * 5);max-width:1440px;padding-inline:calc(var(--spacing) * 8);padding-top:calc(var(--spacing) * 10);padding-bottom:calc(var(--spacing) * 24);margin-inline:auto;display:grid}main>h2{margin-top:calc(var(--spacing) * 8);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:var(--text-largetitle);--tw-leading:1.12;--tw-font-weight:var(--font-weight-bold);line-height:1.12;font-weight:var(--font-weight-bold);--tw-tracking:-.03em;letter-spacing:-.03em}main>h2:first-child{margin-top:0}.row,.hero,.prio,.tiles,details.section>.grid{gap:calc(var(--spacing) * 5);display:grid}.row.split{grid-template-columns:repeat(1,minmax(0,1fr))}@media (min-width:64rem){.row.split{grid-template-columns:minmax(320px,1fr) minmax(320px,1.15fr)}}.hero{grid-template-columns:repeat(1,minmax(0,1fr));align-items:flex-start}@media (min-width:64rem){.hero{grid-template-columns:minmax(340px,1.25fr) minmax(300px,1fr)}}details.section>summary{cursor:pointer;align-items:baseline;gap:calc(var(--spacing) * 3);padding-top:calc(var(--spacing) * 8);padding-bottom:calc(var(--spacing) * 2);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:var(--text-largetitle);--tw-leading:1.12;--tw-font-weight:var(--font-weight-bold);line-height:1.12;font-weight:var(--font-weight-bold);--tw-tracking:-.03em;letter-spacing:-.03em;list-style-type:none;display:flex}details.section>summary::-webkit-details-marker{display:none}details.section>summary:after{content:"Show";--tw-font-weight:var(--font-weight-normal);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:15px;font-weight:var(--font-weight-normal);--tw-tracking:var(--tracking-normal);letter-spacing:var(--tracking-normal);color:var(--accent);margin-left:auto}details.section[open]>summary:after{content:"Hide"}details.section>summary .cnt{--tw-font-weight:var(--font-weight-normal);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:15px;font-weight:var(--font-weight-normal);--tw-tracking:var(--tracking-normal);letter-spacing:var(--tracking-normal);color:var(--faint)}.card{border-radius:var(--radius-card);background-color:var(--panel);min-width:0;box-shadow:var(--lift);overflow:hidden}.card>h2{align-items:baseline;gap:calc(var(--spacing) * 2.5);padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 6);padding-bottom:calc(var(--spacing) * 3);--tw-leading:var(--leading-tight);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:19px;line-height:var(--leading-tight);--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);--tw-tracking:-.02em;letter-spacing:-.02em;flex-wrap:wrap;margin:0;display:flex}.card>h2 .cnt{--tw-font-weight:var(--font-weight-normal);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;font-weight:var(--font-weight-normal);--tw-tracking:var(--tracking-normal);letter-spacing:var(--tracking-normal);color:var(--faint)}.card .body{padding-inline:calc(var(--spacing) * 7);padding-top:var(--spacing);padding-bottom:calc(var(--spacing) * 7)}.card>.scroll,.card>.vscroll{box-shadow:inset 0 1px 0 var(--line)}.prio{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}.prio .card{flex-direction:column;display:flex}.prio .lbl{align-items:center;gap:calc(var(--spacing) * 2);padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 6);--tw-font-weight:var(--font-weight-semibold);font-size:13px;font-weight:var(--font-weight-semibold);color:var(--dim);order:-9999;display:flex}.prio .lbl:before{content:"";width:calc(var(--spacing) * 2);height:calc(var(--spacing) * 2);background-color:var(--line);border-radius:3.40282e38px}.prio .crit .lbl:before{background-color:var(--crit)}.prio .high .lbl:before{background-color:var(--high)}.prio .you .lbl:before{background-color:var(--accent)}.prio .blind .lbl:before{background-color:var(--med)}.prio .clean .lbl:before{background-color:var(--ok)}.prio .big{padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 2);padding-bottom:calc(var(--spacing) * 5);--tw-leading:1;--tw-font-weight:var(--font-weight-bold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:56px;line-height:1;font-weight:var(--font-weight-bold);--tw-tracking:-.05em;letter-spacing:-.05em;font-variant-numeric:tabular-nums}.prio ul{flex:1;margin:0;padding:0;list-style-type:none}.prio li{gap:calc(var(--spacing) * .5);padding-inline:calc(var(--spacing) * 7);padding-block:calc(var(--spacing) * 3);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));box-shadow:inset 0 1px 0 var(--line);display:grid}.prio li .t{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);overflow-wrap:break-word}.prio li small{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));overflow-wrap:break-word;color:var(--faint)}.prio .act{gap:calc(var(--spacing) * 2);padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 4);padding-bottom:calc(var(--spacing) * 6);flex-wrap:wrap;display:flex}.prio .act button,.alertbar button{padding-inline:0;padding-block:var(--spacing);--tw-font-weight:var(--font-weight-normal);font-size:14px;font-weight:var(--font-weight-normal);color:var(--accent);background-color:#0000}@media (hover:hover){:is(.prio .act button,.alertbar button):hover{background-color:#0000;text-decoration-line:underline}}.prio .act button:after,.alertbar button:after{content:" ›"}.alertbar button+button{margin-left:calc(var(--spacing) * 4)}.scorebox{align-items:flex-start;gap:calc(var(--spacing) * 6);flex-direction:column;display:flex}@media (min-width:40rem){.scorebox{flex-direction:row;align-items:center}}.ring{flex:none;width:156px;height:156px;position:relative}.ring svg{width:100%;height:100%;rotate:-90deg}.ring circle{stroke-width:12px!important}.ring circle:first-child{display:none}.ring .track{stroke:var(--fill)}.ring .fill{stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1),stroke .4s}.ring.held .fill{opacity:.5}.ring .num{flex-direction:column;justify-content:center;align-items:center;display:flex;position:absolute;inset:0}.ring .num b{--tw-leading:1;--tw-font-weight:var(--font-weight-semibold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:52px;line-height:1;font-weight:var(--font-weight-semibold);--tw-tracking:-.05em;letter-spacing:-.05em;font-variant-numeric:tabular-nums}.ring .num span{margin-top:var(--spacing);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint)}.scoremeta{gap:calc(var(--spacing) * 2);flex:1;min-width:0;display:grid}.scoremeta .grade{font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:var(--text-title);--tw-leading:1.14;--tw-font-weight:var(--font-weight-bold);line-height:1.14;font-weight:var(--font-weight-bold);--tw-tracking:-.025em;letter-spacing:-.025em}.scoremeta .grade:first-letter{text-transform:uppercase}.scoremeta .cov{color:var(--dim);font-size:13px}.delta{gap:var(--spacing);padding-inline:calc(var(--spacing) * 2.5);padding-block:var(--spacing);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-leading:1;--tw-font-weight:var(--font-weight-semibold);line-height:1;font-weight:var(--font-weight-semibold);border-radius:3.40282e38px;display:inline-flex}.delta.up{background:var(--ok-soft);color:var(--ok)}.delta.down{background:var(--high-soft);color:var(--high)}.delta.flat{background-color:var(--fill);color:var(--dim)}.spark{height:calc(var(--spacing) * 8);width:100%}.meter{margin-top:calc(var(--spacing) * 2);height:calc(var(--spacing) * 1.5);background-color:var(--fill);border-radius:3.40282e38px;overflow:hidden}.meter>i{border-radius:3.40282e38px;height:100%;transition:width .6s cubic-bezier(.2,.8,.2,1);display:block}.meter.sm{margin-top:0}.areas{margin-top:calc(var(--spacing) * 7);align-items:center;column-gap:calc(var(--spacing) * 4);row-gap:calc(var(--spacing) * 3);padding-top:calc(var(--spacing) * 6);box-shadow:inset 0 1px 0 var(--line);grid-template-columns:auto 1fr auto;font-size:13px;display:grid}.areas .nm{white-space:nowrap;color:var(--dim)}.areas .pc{text-align:right;white-space:nowrap;color:var(--faint);font-variant-numeric:tabular-nums}.rechk{margin-left:calc(var(--spacing) * 1.5);color:var(--accent);font-size:11px}.wake{--tw-leading:var(--leading-normal);font-size:13px;line-height:var(--leading-normal)}.wake .dim{color:var(--faint)}.wakebar{margin-block:calc(var(--spacing) * 1.5);height:calc(var(--spacing) * 1.5);background-color:var(--fill);border-radius:3.40282e38px;overflow:hidden}.wakebar i{background-color:var(--accent);border-radius:3.40282e38px;height:100%;transition:width .6s;display:block}#healthcard details{margin-top:calc(var(--spacing) * 6);padding-top:calc(var(--spacing) * 5);color:var(--dim);box-shadow:inset 0 1px 0 var(--line);font-size:13px}#healthcard summary{cursor:pointer;--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);color:var(--accent)}.wins{padding:0;padding-bottom:calc(var(--spacing) * 2);margin:0;list-style-type:none}.wins li{cursor:pointer;column-gap:calc(var(--spacing) * 3);row-gap:calc(var(--spacing) * .5);padding-inline:calc(var(--spacing) * 7);padding-block:calc(var(--spacing) * 3.5);transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));grid-template-columns:32px 1fr;display:grid}@media (hover:hover){.wins li:hover{background-color:var(--fill)}}.wins li{box-shadow:inset 0 1px 0 var(--line)}.wins li:focus-visible{background-color:var(--fill);--tw-outline-style:none;outline-style:none}.wins .rank{font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:var(--text-xl);line-height:var(--tw-leading,var(--text-xl--line-height));--tw-leading:var(--leading-tight);line-height:var(--leading-tight);--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);color:var(--faint);font-variant-numeric:tabular-nums;grid-row:span 2/span 2}.wins li:first-child .rank{color:var(--accent)}.wins .t{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);overflow-wrap:break-word}.wins .a,.wins .loc{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint);grid-column-start:2}.winsfoot{padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 3);padding-bottom:calc(var(--spacing) * 6);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint)}li.static{cursor:default}@media (hover:hover){li.static:hover{background-color:#0000}}.reviewqueue>summary{cursor:pointer;align-items:baseline;gap:calc(var(--spacing) * 2.5);padding-inline:calc(var(--spacing) * 7);padding-block:calc(var(--spacing) * 6);--tw-leading:var(--leading-tight);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:19px;line-height:var(--leading-tight);--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);--tw-tracking:-.02em;letter-spacing:-.02em;list-style-type:none;display:flex}.reviewqueue>summary::-webkit-details-marker{display:none}.reviewqueue>summary:after{content:"Show";--tw-font-weight:var(--font-weight-normal);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:15px;font-weight:var(--font-weight-normal);--tw-tracking:var(--tracking-normal);letter-spacing:var(--tracking-normal);color:var(--accent);margin-left:auto}.reviewqueue[open]>summary:after{content:"Hide"}.reviewqueue .cnt{--tw-font-weight:var(--font-weight-normal);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;font-weight:var(--font-weight-normal);--tw-tracking:var(--tracking-normal);letter-spacing:var(--tracking-normal);color:var(--faint)}.reviewqueue.needs .cnt{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);color:var(--high)}.reviewqueue[open]{padding-bottom:calc(var(--spacing) * 4)}.question{margin-inline:calc(var(--spacing) * 7);margin-bottom:calc(var(--spacing) * 3);gap:calc(var(--spacing) * 3);border-radius:var(--radius-2xl);background-color:var(--fill);padding:calc(var(--spacing) * 4);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));display:grid}.question-actions{gap:calc(var(--spacing) * 2);flex-wrap:wrap;display:flex}.tiles{grid-template-columns:repeat(auto-fit,minmax(128px,1fr))}.tile{cursor:pointer;border-radius:var(--radius-card);background-color:var(--panel);padding-inline:calc(var(--spacing) * 6);padding-block:calc(var(--spacing) * 5);transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}@media (hover:hover){.tile:hover{background-color:var(--panel2)}}.tile{box-shadow:var(--lift)}.tile.on{box-shadow:inset 0 0 0 2px var(--accent)}.tile .n{--tw-leading:1.05;--tw-font-weight:var(--font-weight-semibold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:34px;line-height:1.05;font-weight:var(--font-weight-semibold);--tw-tracking:-.04em;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.tile .k{margin-top:calc(var(--spacing) * 1.5);color:var(--dim);font-size:13px}.tile .k .ic{margin-right:calc(var(--spacing) * 1.5)}.tile .sub{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint)}.tile.good .n{color:var(--ok)}.hosttile .n{column-gap:calc(var(--spacing) * 2.5);padding-top:calc(var(--spacing) * 1.5);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-leading:var(--leading-relaxed);line-height:var(--leading-relaxed);--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);--tw-tracking:var(--tracking-normal);letter-spacing:var(--tracking-normal);flex-wrap:wrap;display:flex}table{border-collapse:collapse;width:100%;font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}th,td{padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 3);text-align:left;vertical-align:top}th:first-child,td:first-child{padding-left:calc(var(--spacing) * 7)}th:last-child,td:last-child{padding-right:calc(var(--spacing) * 7)}thead th{z-index:1;background-color:var(--panel);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);color:var(--faint);box-shadow:inset 0 -1px 0 var(--line);position:sticky;top:0}tbody tr{box-shadow:inset 0 1px 0 var(--line)}tbody tr:first-child{box-shadow:none}tbody tr:hover{background-color:var(--fill)}tr.clickable{cursor:pointer}.expand,.expand:hover{background-color:var(--panel2)}.expand td{padding-inline:calc(var(--spacing) * 7);padding-block:calc(var(--spacing) * 4)}.title{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.detail{overflow-wrap:break-word;color:var(--dim)}.where{margin-top:var(--spacing);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));word-break:break-all;color:var(--faint)}.kv{column-gap:calc(var(--spacing) * 5);row-gap:calc(var(--spacing) * 1.5);grid-template-columns:max-content 1fr;margin:0;font-size:13px;display:grid}.kv dt{color:var(--faint)}.kv dd{overflow-wrap:break-word;margin:0}.pill{align-items:center;gap:var(--spacing);background-color:var(--fill);padding-inline:calc(var(--spacing) * 2.5);padding-block:calc(var(--spacing) * .5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-leading:1.4;--tw-font-weight:var(--font-weight-semibold);line-height:1.4;font-weight:var(--font-weight-semibold);white-space:nowrap;color:var(--dim);text-transform:capitalize;border-radius:3.40282e38px;display:inline-flex}.pill.critical{background:var(--crit-soft);color:var(--crit)}.pill.high{background:var(--high-soft);color:var(--high)}.pill.medium{background:var(--med-soft);color:var(--med)}.pill.low{color:var(--low)}.pill.ok{background:var(--ok-soft);color:var(--ok)}.tag{border-radius:var(--radius-md);background-color:var(--fill);padding-inline:calc(var(--spacing) * 2);padding-block:calc(var(--spacing) * .5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-leading:var(--leading-normal);line-height:var(--leading-normal);--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);white-space:nowrap;color:var(--dim);display:inline-block}.sev{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);white-space:nowrap;text-transform:capitalize}.c-critical{color:var(--crit)}.c-high{color:var(--high)}.c-medium{color:var(--med)}.c-low{color:var(--low)}.c-ok{color:var(--ok)}.findtools{align-items:center;gap:calc(var(--spacing) * 2);padding-inline:calc(var(--spacing) * 7);padding-bottom:calc(var(--spacing) * 4);flex-wrap:wrap;display:flex}.grouprow{background-color:var(--panel2);--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.job{align-items:center;gap:calc(var(--spacing) * 3);padding-block:calc(var(--spacing) * 3);box-shadow:inset 0 1px 0 var(--line);display:flex}.job:first-child{box-shadow:none}.dot{width:calc(var(--spacing) * 2);height:calc(var(--spacing) * 2);background-color:var(--ok);border-radius:3.40282e38px;flex:none}.dot.stale{background-color:var(--med)}.dot.err,.dot.never{background-color:var(--crit)}.dot.run{background-color:var(--accent);animation:1s infinite beat}.job .name{flex:1;min-width:0}.job .name b{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.job .name .c-critical,.job .name .c-high,.job .name .c-medium,.job .name .c-low,.job .name .c-ok{margin-left:var(--spacing);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.job .age{text-align:right;font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-leading:var(--leading-snug);line-height:var(--leading-snug);white-space:nowrap;color:var(--faint)}.bar{margin-top:calc(var(--spacing) * 1.5);height:var(--spacing);background-color:var(--fill);border-radius:3.40282e38px;overflow:hidden}.bar i{background-color:var(--accent);border-radius:3.40282e38px;height:100%;display:block}.errbox{padding-bottom:calc(var(--spacing) * 2);padding-left:calc(var(--spacing) * 5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));white-space:pre-wrap;color:var(--crit)}.stat{padding-block:calc(var(--spacing) * 3.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));color:var(--dim);box-shadow:inset 0 1px 0 var(--line)}.stat b{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);color:var(--fg)}.stat.head{box-shadow:none;padding-top:0}.stat.head b{margin-right:calc(var(--spacing) * 2);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:var(--text-title);--tw-leading:1;--tw-font-weight:var(--font-weight-bold);line-height:1;font-weight:var(--font-weight-bold);--tw-tracking:-.03em;letter-spacing:-.03em}.chart{height:calc(var(--spacing) * 24);align-items:flex-end;gap:3px;display:flex}.chart .col{height:100%;min-width:calc(var(--spacing) * .5);gap:calc(var(--spacing) * .5);border-radius:var(--radius-sm);flex-direction:column-reverse;flex:1;display:flex}@media (hover:hover){.chart .col:hover{background-color:var(--fill)}}.chart .col i{border-radius:2px;width:100%;display:block}.chart .empty{flex:1;align-self:center}.legend{margin-top:calc(var(--spacing) * 3);align-items:center;gap:calc(var(--spacing) * 4);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--dim);flex-wrap:wrap;display:flex}.legend i{margin-right:calc(var(--spacing) * 1.5);width:calc(var(--spacing) * 2);height:calc(var(--spacing) * 2);border-radius:3.40282e38px;display:inline-block}.catgrid{margin-top:calc(var(--spacing) * 4);border-radius:var(--radius-xl);background-color:var(--line);grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;display:grid;overflow:hidden}.catgrid div{justify-content:space-between;gap:calc(var(--spacing) * 2);background-color:var(--panel);padding-inline:calc(var(--spacing) * 3);padding-block:calc(var(--spacing) * 2);color:var(--dim);font-size:13px;display:flex}.catgrid b{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);color:var(--fg);font-variant-numeric:tabular-nums}.scoretrend{height:calc(var(--spacing) * 36);width:100%;display:block}.scoretrend text{display:none}.trendmeta{margin-top:calc(var(--spacing) * 1.5);justify-content:space-between;gap:calc(var(--spacing) * 3);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint);display:flex}.attackhead{margin-bottom:calc(var(--spacing) * 6);gap:calc(var(--spacing) * 10);flex-wrap:wrap;display:flex}.attackhead div b{--tw-leading:1;--tw-font-weight:var(--font-weight-semibold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:36px;line-height:1;font-weight:var(--font-weight-semibold);--tw-tracking:-.04em;letter-spacing:-.04em;font-variant-numeric:tabular-nums;display:block}.attackhead div span{color:var(--faint);font-size:13px}.attack{align-items:center;column-gap:calc(var(--spacing) * 4);row-gap:calc(var(--spacing) * 2.5);grid-template-columns:minmax(150px,max-content) 1fr 72px;font-size:13px;display:grid}.attack .tn{white-space:nowrap;color:var(--dim)}.attack .tn:first-letter{text-transform:uppercase}.attack .tb{height:calc(var(--spacing) * 2);gap:calc(var(--spacing) * .5);display:flex}.attack .tb i{border-radius:2px;height:100%;display:block}.attack .tc{text-align:right;color:var(--faint);font-variant-numeric:tabular-nums}.lv-validated{background-color:var(--accent)}.lv-claimed{background:var(--accent)}@supports (color:color-mix(in lab, red, red)){.lv-claimed{background:color-mix(in srgb, var(--accent) 35%, var(--panel))}}.lv-blind{background-color:var(--fill)}.lv-regressed{background-color:var(--crit)}.sw{margin-right:calc(var(--spacing) * 1.5);width:calc(var(--spacing) * 2);height:calc(var(--spacing) * 2);border-radius:3.40282e38px;display:inline-block}.intel-head{padding-inline:calc(var(--spacing) * 7);padding-block:calc(var(--spacing) * 3);color:var(--dim);box-shadow:inset 0 -1px 0 var(--line);font-size:13px}.intel-head b{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);color:var(--fg)}.kindrow{gap:calc(var(--spacing) * 1.5);padding-inline:calc(var(--spacing) * 7);padding-block:calc(var(--spacing) * 3);flex-wrap:wrap;display:flex}.kindrow .tag b{color:var(--fg)}h3.sub{margin-inline:calc(var(--spacing) * 7);margin-top:calc(var(--spacing) * 5);margin-bottom:calc(var(--spacing) * 2);--tw-font-weight:var(--font-weight-semibold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Text,InterVariable,Inter,Segoe UI Variable Text,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:13px;font-weight:var(--font-weight-semibold);color:var(--faint)}.panelnote{padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 4);padding-bottom:calc(var(--spacing) * 2);color:var(--dim);font-size:13px}.groupname{padding-inline:calc(var(--spacing) * 7);padding-top:calc(var(--spacing) * 5);padding-bottom:calc(var(--spacing) * 2);--tw-font-weight:var(--font-weight-semibold);font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,InterVariable,Inter,Segoe UI Variable Display,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:15px;font-weight:var(--font-weight-semibold)}.geoframe{border-style:var(--tw-border-style);width:100%;height:460px;box-shadow:inset 0 1px 0 var(--line);border-width:0;display:block}.jarvis .voicebar{align-items:center;gap:calc(var(--spacing) * 3);padding-inline:calc(var(--spacing) * 7);padding-top:var(--spacing);padding-bottom:calc(var(--spacing) * 4);flex-wrap:wrap;display:flex}.orb{width:calc(var(--spacing) * 6);height:calc(var(--spacing) * 6);background-color:var(--accent-soft);opacity:.6;transition-property:opacity;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));border-radius:3.40282e38px;flex:none;position:relative}.orb:after{content:"";background-color:var(--accent);border-radius:3.40282e38px;position:absolute;inset:7px}.orb.on{opacity:1}.orb.think{opacity:1;animation:1.2s ease-in-out infinite think}.orb.speak{opacity:1;animation:.45s ease-in-out infinite alternate speak}.caption{min-width:180px;font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));flex:1}.caption small{margin-top:calc(var(--spacing) * .5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint);display:block}.jarvis select{max-width:200px}.opener,.chat-answer{margin-inline:calc(var(--spacing) * 7);margin-bottom:calc(var(--spacing) * 3);border-radius:var(--radius-2xl);padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 3.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.opener{background-color:var(--accent-soft)}.opener:empty{display:none}.chat-answer{min-height:calc(var(--spacing) * 11);background-color:var(--fill);white-space:pre-wrap}.chat-source{margin-top:calc(var(--spacing) * 2.5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint)}.chat{gap:calc(var(--spacing) * 2);padding-inline:calc(var(--spacing) * 7);padding-top:var(--spacing);padding-bottom:calc(var(--spacing) * 3);grid-template-columns:1fr auto;display:grid}.chat input{width:100%;min-width:0;padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 3);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));border-radius:3.40282e38px}.chat button{padding-inline:calc(var(--spacing) * 5);padding-block:calc(var(--spacing) * 3);background:var(--accent);color:var(--accent-ink);border-radius:3.40282e38px}.greet p{margin-bottom:calc(var(--spacing) * 1.5)}.greet p:first-child{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.greet p.warn{color:var(--high)}.quick{padding-inline:calc(var(--spacing) * 7);padding-bottom:calc(var(--spacing) * 6)}#tip{pointer-events:none;z-index:50;border-radius:var(--radius-lg);background-color:var(--fg);max-width:300px;padding-inline:calc(var(--spacing) * 2.5);padding-block:calc(var(--spacing) * 2);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--bg);opacity:0;transition-property:opacity;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.1s;transition-duration:.1s;position:fixed}#tip.on{opacity:1}.toasts{right:calc(var(--spacing) * 6);bottom:calc(var(--spacing) * 6);z-index:40;gap:calc(var(--spacing) * 2.5);width:min(380px,100vw - 48px);display:grid;position:fixed}.toast{border-radius:var(--radius-2xl);padding-inline:calc(var(--spacing) * 5);padding-block:calc(var(--spacing) * 3.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));background:var(--material);-webkit-backdrop-filter:saturate(180%)blur(20px);backdrop-filter:saturate(180%)blur(20px);box-shadow:0 10px 40px #00000038, 0 0 0 .5px var(--hairline);animation:.25s rise}.toast.good{box-shadow:0 10px 40px #00000038, inset 4px 0 0 var(--ok)}.toast.warn{box-shadow:0 10px 40px #00000038, inset 4px 0 0 var(--high)}.toast.alert{box-shadow:0 10px 40px #00000038, inset 4px 0 0 var(--crit)}.toast small{margin-top:calc(var(--spacing) * .5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--faint);display:block}@media (max-width:640px){header,.nav{padding-inline:calc(var(--spacing) * 4)}header .meta,#pause{display:none}.nav{scrollbar-width:none;flex-wrap:nowrap;top:58px;overflow-x:auto}.nav a{flex-shrink:0}input[type=search]{order:9999;width:100%}main{padding-inline:calc(var(--spacing) * 4);padding-top:calc(var(--spacing) * 6);padding-bottom:calc(var(--spacing) * 16)}.alertbar,.results,.loadnotice{margin-top:calc(var(--spacing) * 4);width:calc(100% - 32px)}main>h2,details.section>summary{font-size:28px}.card>h2,.card .body,.prio .lbl,.prio .big,.prio li,.prio .act,.wins li,.winsfoot,.findtools,.question,.opener,.chat-answer,.chat,.quick,.jarvis .voicebar,.panelnote,.groupname,.intel-head,.kindrow{padding-inline:calc(var(--spacing) * 4)}.question,.opener,.chat-answer{margin-inline:calc(var(--spacing) * 4)}th:first-child,td:first-child{padding-left:calc(var(--spacing) * 4)}th:last-child,td:last-child{padding-right:calc(var(--spacing) * 4)}}}@layer utilities;@font-face{font-family:InterVariable;font-style:normal;font-weight:100 900;font-display:swap;src:url(/static/vendor/InterVariable.woff2)format("woff2")}@keyframes beat{50%{opacity:.3}}@keyframes think{50%{transform:scale(.8)}}@keyframes speak{0%{box-shadow:0 0 0 0 var(--accent-soft)}to{box-shadow:0 0 0 8px var(--accent-soft)}}@keyframes rise{0%{opacity:0;transform:translateY(8px)}}@property --tw-leading{syntax:"*";inherits:false}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-tracking{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}
+/* shell.css: plain CSS appended by build_ui.sh */
+/* ==========================================================================
+   ARGUS-INSTINCT application shell: sidebar, views, beginner-facing Overview.
+
+   Plain CSS (no Tailwind directives). scripts/dev/build_ui.sh appends this
+   file to the compiled design system in the page's inline stylesheet, so the page
+   still ships exactly one stylesheet. Colours come from the existing theme
+   tokens (--bg, --panel, --fg, --crit ...) so Light/Dark keep working; only
+   the sidebar has its own fixed near-black palette, as in the reference.
+   ========================================================================== */
+:root {
+  --sb-bg: #0a0c0b; --sb-line: #1c211e; --sb-fg: #e7ece9; --sb-dim: #8d9791;
+  --sb-hover: rgba(255, 255, 255, .06); --sb-active-bg: rgba(52, 211, 120, .16);
+  --sb-green: #3ddc84; --sb-ring: #3ddc84; --sb-w: 252px;
+}
+
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor;
+       stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.skip { position: absolute; left: 12px; top: -48px; z-index: 100; padding: 10px 14px;
+        border-radius: 10px; background: var(--sb-green); color: #04140b; font-weight: 600; }
+.skip:focus { top: 12px; }
+
+/* ---------- layout ---------- */
+.content { min-width: 0; margin-left: var(--sb-w); }
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; z-index: 40; width: var(--sb-w);
+  display: flex; flex-direction: column; gap: 4px; padding: 20px 14px 16px;
+  overflow-y: auto; background: var(--sb-bg); color: var(--sb-fg);
+  border-right: 1px solid var(--sb-line);
+}
+.side-brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 18px; }
+.side-brand .logo { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+                    background: var(--sb-green); color: #04140b; }
+.side-brand .logo .ico { width: 20px; height: 20px; stroke-width: 2.1; }
+.side-brand .name { font: 700 19px/1 var(--font-display, system-ui); letter-spacing: -.02em; }
+.side-brand .sub { display: block; margin-top: 3px; font: 500 11px/1 var(--font-sans, system-ui);
+                   letter-spacing: .02em; color: var(--sb-dim); }
+.sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+.sidebar a {
+  display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 12px;
+  border-radius: 12px; color: var(--sb-dim); font-size: 14.5px; font-weight: 500;
+  text-decoration: none; transition: background .12s, color .12s;
+}
+.sidebar a:hover { background: var(--sb-hover); color: var(--sb-fg); }
+.sidebar a[aria-current="page"] { background: var(--sb-active-bg); color: var(--sb-green); font-weight: 600; }
+.sidebar a:focus-visible { outline: 2px solid var(--sb-ring); outline-offset: 2px; }
+.sidebar a .n { margin-left: auto; min-width: 22px; padding: 2px 7px; border-radius: 999px;
+                background: rgba(255, 255, 255, .1); color: var(--sb-fg); font-size: 11.5px;
+                font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
+.sidebar a .n:empty { display: none; }
+.sidebar a .n.bad { background: rgba(255, 90, 80, .22); color: #ff9a92; }
+.sidebar a .n.warn { background: rgba(255, 190, 70, .2); color: #ffd083; }
+.sidebar a .ext { margin-left: auto; width: 15px; height: 15px; opacity: .7; }
+.side-group { margin: 18px 12px 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em;
+              text-transform: uppercase; color: #66706a; }
+.side-foot { margin-top: auto; padding: 14px 12px 4px; border-top: 1px solid var(--sb-line);
+             font-size: 12.5px; line-height: 1.45; color: var(--sb-dim); }
+.side-foot strong { display: block; color: var(--sb-fg); font-weight: 600; }
+.menu { display: none; align-items: center; justify-content: center; width: 40px; height: 40px;
+        padding: 0; border-radius: 12px; }
+.scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, .55); }
+.scrim[hidden] { display: none; }
+
+/* a view shows only the blocks tagged for it; with scripting off, Overview shows */
+body[data-view="overview"] [data-views]:not([data-views~="overview"]),
+body[data-view="security"] [data-views]:not([data-views~="security"]),
+body[data-view="accounts"] [data-views]:not([data-views~="accounts"]),
+body[data-view="network"] [data-views]:not([data-views~="network"]),
+body[data-view="monitoring"] [data-views]:not([data-views~="monitoring"]),
+body[data-view="assistant"] [data-views]:not([data-views~="assistant"]),
+body[data-view="pricing"] [data-views]:not([data-views~="pricing"]),
+body[data-view="settings"] [data-views]:not([data-views~="settings"]) { display: none !important; }
+body[data-view="network"] #tab-ops, body[data-view="network"] #tab-intel, body[data-view="network"] #tab-events,
+body[data-view="settings"] #tab-peers, body[data-view="settings"] #tab-internet { display: none; }
+.row.split { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+main:focus { outline: none; }
+
+.pagehead { margin: 0 0 4px; }
+.pagehead h1 { margin: 0; font: 700 34px/1.12 var(--font-display, system-ui); letter-spacing: -.03em; }
+.pagehead h1:focus { outline: none; }
+.pagehead p { margin: 6px 0 0; max-width: 70ch; color: var(--dim); font-size: 15px; }
+
+/* ---------- Overview ---------- */
+.ovstatus { display: grid; gap: 14px; padding: 26px 28px; border-radius: var(--radius-card, 22px);
+            background: var(--panel); box-shadow: inset 5px 0 0 var(--faint); }
+.ovstatus[data-level="attention"] { box-shadow: inset 5px 0 0 var(--crit); background: var(--crit-soft); }
+.ovstatus[data-level="incomplete"] { box-shadow: inset 5px 0 0 var(--med); background: var(--med-soft); }
+.ovstatus[data-level="ok"] { box-shadow: inset 5px 0 0 var(--ok); background: var(--ok-soft); }
+.ovstatus h2 { margin: 0; display: flex; align-items: center; gap: 12px;
+               font: 700 28px/1.15 var(--font-display, system-ui); letter-spacing: -.025em; }
+.ovstatus h2 .ico { width: 30px; height: 30px; }
+.ovstatus p { margin: 0; max-width: 78ch; font-size: 15.5px; }
+.ovstatus .score { color: var(--dim); font-size: 14.5px; }
+.ovstatus .score button { margin-left: 6px; }
+.ovcounts { display: flex; flex-wrap: wrap; gap: 10px; margin: 2px 0 0; padding: 0; list-style: none; }
+.ovcounts li { display: flex; align-items: baseline; gap: 8px; padding: 9px 14px; border-radius: 14px;
+               background: var(--panel); font-size: 13px; color: var(--dim); }
+.ovcounts li b { font: 700 20px/1 var(--font-display, system-ui); color: var(--fg);
+                 font-variant-numeric: tabular-nums; }
+.ovfoot { margin: 0; font-size: 12.5px; color: var(--faint); }
+.ovgrid { display: grid; gap: 20px; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.ovnext .body { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 15.5px; }
+.ovnext .body p { margin: 0; flex: 1 1 360px; }
+.ovmeter { height: 10px; border-radius: 999px; background: var(--fill); overflow: hidden; margin: 10px 0 6px; }
+.ovmeter > i { display: block; height: 100%; border-radius: 999px; background: var(--ok); }
+.ovlist { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14px; }
+.ovlist li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.ovlist .why { flex-basis: 100%; color: var(--dim); font-size: 13px; }
+.ovactions, .fxa { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+
+/* ---------- findings in plain language ---------- */
+.fx { margin: 0 0 14px; padding: 18px 20px; border-radius: 18px; background: var(--panel2);
+      box-shadow: inset 4px 0 0 var(--faint); }
+.fx.k-suspicious { box-shadow: inset 4px 0 0 var(--high); }
+.fx.k-confirmed { box-shadow: inset 4px 0 0 var(--med); }
+.fx.k-monitoring { box-shadow: inset 4px 0 0 var(--accent); }
+.fx.k-unverified { box-shadow: inset 4px 0 0 var(--low); }
+.fx h3 { margin: 8px 0 8px; font-size: 17px; line-height: 1.3; letter-spacing: -.01em; }
+.fx p { margin: 6px 0; font-size: 14px; }
+.fx p b { font-weight: 600; }
+.fxh { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.kind { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+        background: var(--fill); font-size: 12px; font-weight: 600; }
+.kind .ico { width: 14px; height: 14px; }
+.kind.k-suspicious { background: var(--high-soft); color: var(--high); }
+.kind.k-confirmed { background: var(--med-soft); color: var(--med); }
+.kind.k-monitoring { background: var(--accent-soft); color: var(--accent); }
+.kind.k-info, .kind.k-unverified { color: var(--dim); }
+.fx .sev { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+.fx .unc { color: var(--dim); }
+.fx details.tech { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+.fx details.tech > summary { cursor: pointer; font-size: 13.5px; font-weight: 600; padding: 4px 0; }
+.fx details.tech .kv { margin-top: 8px; }
+.glossary dt { margin-top: 10px; font-weight: 600; }
+.glossary dd { margin: 2px 0 0; color: var(--dim); font-size: 14px; }
+.prose { max-width: 74ch; font-size: 14.5px; }
+.prose p { margin: 0 0 10px; }
+.empty-good { color: var(--dim); font-size: 14px; }
+
+/* ---------- monitoring health ---------- */
+.dhrow { margin: 0 0 8px; padding: 10px 12px; border-radius: 14px; background: var(--panel2); }
+.dhrow > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 14px; }
+.dhrow .more { margin-top: 8px; font-size: 13.5px; display: grid; gap: 4px; }
+.dhrow small { color: var(--faint); }
+
+/* ---------- assistant ---------- */
+.sec { margin: 0 0 9px; }
+.sec b.tag { margin-right: 4px; font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
+             text-transform: uppercase; color: var(--faint); }
+.chat-actions, .chat-chips, .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.suggest { margin: 0; padding: 12px 28px 4px; }
+.suggest-h { margin: 0; padding: 14px 28px 0; font-size: 13px; font-weight: 600; color: var(--dim); }
+.chat-model { margin-top: 8px; font-size: 12.5px; color: var(--dim); }
+.modelline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 4px 28px 14px;
+             font-size: 12.5px; color: var(--dim); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1100px) {
+  .content { margin-left: 0; }
+  .menu { display: inline-flex; }
+  .sidebar { transform: translateX(-102%); transition: transform .18s ease; box-shadow: 0 0 40px rgba(0, 0, 0, .5); }
+  .sidebar.open { transform: none; }
+  .ovgrid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .pagehead h1 { font-size: 28px; }
+  .ovstatus { padding: 20px; } .ovstatus h2 { font-size: 23px; }
+  .row.split { grid-template-columns: minmax(0, 1fr); }
+  .suggest, .suggest-h, .modelline { padding-left: 16px; padding-right: 16px; }
+}
+@media (min-width: 1101px) { .content > header .brand { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+
+#more { display: grid; gap: 20px; }
+.plainsum { cursor: pointer; padding: 22px 28px; font: 600 19px/1.3 var(--font-display, system-ui); letter-spacing: -.02em; }
+.prose p { margin: 0 0 10px; }
+
+/* the page heading replaces the old collapsible section title inside views */
+details.section[data-views] > summary { display: none; }
+
+/* ---------- simple and advanced detail ---------- */
+body[data-detail="simple"] .adv { display: none; }
+
+/* ---------- findings as readable sections ---------- */
+.fxs { margin: 12px 0 0; }
+.fxs h4 { margin: 0 0 4px; font: 600 12px/1.3 var(--font-sans, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+.fxs h5 { margin: 0 0 4px; font-size: 13px; font-weight: 600; }
+.fxs p, .fxs ul, .fxs ol { margin: 0; font-size: 14px; }
+.fxs ul, .fxs ol { padding-left: 20px; }
+.fxs li { margin: 2px 0; }
+.fxs ul.where { list-style: none; padding: 0; display: grid; gap: 4px; }
+.fxs ul.where code { word-break: break-all; font-size: 12.5px; }
+.fxcols { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.copy { min-height: 28px; padding: 2px 10px; font-size: 12px; }
+.lastline { color: var(--fg); }
+.ovpend { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 18px; border-radius: 18px; background: var(--panel); }
+.kind.k-lc { background: var(--fill); color: var(--fg); }
+.lc { margin: 10px 0 0; font-size: 13.5px; }
+
+/* a definition is one hover or one keyboard focus away */
+.gl { border-bottom: 1px dotted var(--dim); cursor: help; position: relative; }
+.gl:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.gl::after { content: attr(data-def); position: absolute; left: 0; bottom: calc(100% + 6px); z-index: 30; width: max-content; max-width: 280px;
+  padding: 8px 10px; border-radius: 10px; background: var(--fg); color: var(--bg); font-size: 12.5px; font-weight: 400;
+  line-height: 1.4; text-transform: none; letter-spacing: 0; opacity: 0; visibility: hidden; pointer-events: none; }
+.gl:hover::after, .gl:focus::after { opacity: 1; visibility: visible; }
+
+/* ---------- investigation reports ---------- */
+.rep { margin: 12px 0 0; padding: 10px 14px; border-radius: 14px; background: var(--panel2); }
+.rep > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; }
+.rep .tech { margin-top: 8px; }
+
+/* ---------- notification centre ---------- */
+.bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; padding: 0; }
+.bell .n { position: absolute; top: -4px; right: -4px; min-width: 18px; padding: 1px 5px; border-radius: 999px; background: var(--crit);
+  color: #fff; font-size: 11px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.bell .n:empty { display: none; }
+.notifs { position: fixed; z-index: 45; top: 64px; right: 24px; width: min(420px, calc(100vw - 32px)); max-height: calc(100vh - 96px);
+  overflow-y: auto; padding: 16px; border-radius: 18px; background: var(--panel); box-shadow: 0 20px 60px rgba(0, 0, 0, .35), inset 0 0 0 1px var(--line); }
+.notifs[hidden] { display: none; }
+.nhead { display: flex; align-items: center; gap: 8px; }
+.nhead h2 { margin: 0 auto 0 0; font-size: 18px; }
+.nhead h2:focus { outline: none; }
+.notifs ul { list-style: none; margin: 12px 0; padding: 0; display: grid; gap: 10px; }
+.nt { padding: 12px 14px; border-radius: 14px; background: var(--panel2); }
+.nt.unread { box-shadow: inset 3px 0 0 var(--accent); }
+.nt p { margin: 4px 0; font-size: 13.5px; }
+.nth { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.nfoot { margin: 0; font-size: 12px; }
+
+/* ---------- approval confirmation ---------- */
+.approval { margin: auto; width: min(680px, calc(100vw - 24px)); max-height: calc(100vh - 32px); padding: 22px 24px; border: 0; border-radius: 22px;
+  background: var(--panel); color: var(--fg); box-shadow: 0 30px 90px rgba(0, 0, 0, .5), inset 0 0 0 1px var(--line); overflow-y: auto; }
+.approval::backdrop { background: rgba(0, 0, 0, .55); }
+.approval h2 { margin: 0 0 8px; font-size: 21px; line-height: 1.25; }
+.apl { margin: 12px 0; display: grid; gap: 10px; }
+.aprow { display: grid; gap: 2px; }
+.aprow dt { font: 600 12px/1.3 var(--font-sans, system-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+.aprow dd { margin: 0; font-size: 14.5px; }
+.apev { margin: 8px 0; font-size: 14px; }
+.apev summary { cursor: pointer; font-weight: 600; }
+.apresult { min-height: 1.4em; margin: 8px 0 0; font-size: 14px; }
+.apactions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+/* declining is the easy, first choice and the prominent one; approving is a plain button that names exactly what it does */
+.apactions button { min-height: 44px; }
+.apactions #ap-return { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.apactions .apapprove { margin-left: auto; background: var(--fill); color: var(--fg); font-weight: 500; }
+.apactions .apapprove:hover { background: var(--line); }
+.moreq { margin: 4px 28px 8px; font-size: 13px; }
+.moreq > summary { cursor: pointer; color: var(--dim); }
+
+@media (max-width: 640px) {
+  .notifs { top: 56px; right: 8px; }
+  .apactions .apapprove { margin-left: 0; }
+}
+</style>
+</head>
+<body data-view="overview">
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-overview" viewBox="0 0 24 24"><path d="M3.5 11 12 3.8 20.5 11M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/></symbol>
+  <symbol id="i-security" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.2 10"/></symbol>
+  <symbol id="i-processes" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M9.5 3v3.5M14.5 3v3.5M9.5 17.5V21M14.5 17.5V21M3 9.5h3.5M3 14.5h3.5M17.5 9.5H21M17.5 14.5H21"/></symbol>
+  <symbol id="i-accounts" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.5c.6-3.8 3.6-6 7.5-6s6.9 2.2 7.5 6"/></symbol>
+  <symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5S9.4 5.9 12 3.5z"/></symbol>
+  <symbol id="i-monitoring" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6.5L14 19l2.7-7H21"/></symbol>
+  <symbol id="i-assistant" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.4 7.5L3.5 20.5l1.2-4.3A8.5 8.5 0 1 1 20.5 12z"/><path d="M8.5 11.5h7M8.5 14.5h4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M8 16 16.5 7.5M9.5 7.5h7v7"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 3 19.5h18z"/><path d="M12 10v4.5M12 17.2v.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.2 2.4 2.4 4.6-4.9"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2M12 7.9v.2"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.6M12 16.8v.2"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7.5 2 7.5H4S6 15 6 9z"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+</svg>
+<a class="skip" href="#main">Skip to main content</a>
+<div class="app">
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+  <div class="side-brand"><span class="logo" aria-hidden="true"><svg class="ico"><use href="#i-security"/></svg></span><span><span class="name">ARGUS-INSTINCT</span><span class="sub">Security assistant</span></span></div>
+  <nav id="sidenav" aria-label="Sections">
+    <a href="#overview" data-view="overview" title="Is my computer okay, and what should I do next"><svg class="ico" aria-hidden="true"><use href="#i-overview"/></svg><span>Overview</span><span class="n" id="nav-prio"></span></a>
+    <a href="#security" data-view="security" title="Everything ARGUS-INSTINCT observed, with evidence"><svg class="ico" aria-hidden="true"><use href="#i-security"/></svg><span>Security</span><span class="n" id="nav-find"></span></a>
+    <a href="/procs" title="Live map of running programs (opens its own page)"><svg class="ico" aria-hidden="true"><use href="#i-processes"/></svg><span>Processes</span><svg class="ico ext" aria-hidden="true"><use href="#i-ext"/></svg></a>
+    <a href="#accounts" data-view="accounts" title="Sign-ins, stored credentials and hidden accounts"><svg class="ico" aria-hidden="true"><use href="#i-accounts"/></svg><span>Accounts</span></a>
+    <a href="#network" data-view="network" title="Connections, traffic and location"><svg class="ico" aria-hidden="true"><use href="#i-network"/></svg><span>Network</span></a>
+    <a href="#monitoring" data-view="monitoring" title="Is ARGUS-INSTINCT's own checking working"><svg class="ico" aria-hidden="true"><use href="#i-monitoring"/></svg><span>Monitoring</span><span class="n" id="nav-mon"></span></a>
+    <a href="#assistant" data-view="assistant" title="Ask questions in plain language"><svg class="ico" aria-hidden="true"><use href="#i-assistant"/></svg><span>Assistant</span></a>
+    <a href="#pricing" data-view="pricing" title="ARGUS-INSTINCT licence, $15 a month or $79 a year"><svg class="ico" aria-hidden="true"><use href="#i-security"/></svg><span>Pricing</span><span class="n" id="nav-lic"></span></a>
+    <a href="#settings" data-view="settings" title="Setup, privacy and data on this computer"><svg class="ico" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></a>
+  </nav>
+  <div class="side-group">Also</div>
+  <nav aria-label="More pages">
+    <a href="/coverage" title="What ARGUS-INSTINCT can and cannot see (opens its own page)"><svg class="ico" aria-hidden="true"><use href="#i-monitoring"/></svg><span>Coverage map</span><svg class="ico ext" aria-hidden="true"><use href="#i-ext"/></svg></a>
+    <a href="/geo" title="Device location and trusted zones (opens its own page)"><svg class="ico" aria-hidden="true"><use href="#i-network"/></svg><span>GeoSecurity</span><svg class="ico ext" aria-hidden="true"><use href="#i-ext"/></svg></a>
+  </nav>
+  <div class="side-foot" id="side-foot" aria-live="polite">Waiting for results…</div>
+</aside>
+<div class="scrim" id="scrim" hidden></div>
+<div class="content" id="content">
+<header>
+  <button id="menu" class="menu" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation menu"><svg class="ico" aria-hidden="true"><use href="#i-menu"/></svg></button>
+  <span class="brand">ARGUS-INSTINCT</span>
+  <span id="status" class="status s-ok">—</span>
+  <span class="live"><span id="beat" class="beat on"></span><span id="livetxt">live</span></span>
+  <span class="spacer"></span>
+  <input type="search" id="q" placeholder="Search findings, checks, collectors…  ( / )" data-input="search" aria-label="Search">
+  <button id="notify" class="notify" data-click="notify" title="Pop a notification on this computer when a new critical finding appears">Notify me</button>
+  <span class="segmented" id="theme" role="group" aria-label="Appearance">
+    <button data-t="auto" data-click="theme" data-arg="auto" title="Follow the system setting">Auto</button>
+    <button data-t="light" data-click="theme" data-arg="light">Light</button>
+    <button data-t="dark" data-click="theme" data-arg="dark">Dark</button>
+  </span>
+  <span class="segmented" id="detaillevel" role="group" aria-label="Level of detail">
+    <button data-d="simple" aria-pressed="true" data-click="detail" data-arg="simple" title="Plain language first">Simple</button>
+    <button data-d="advanced" aria-pressed="false" data-click="detail" data-arg="advanced" title="Open technical details and show identifiers">Advanced</button>
+  </span>
+  <button id="bell" class="bell" aria-haspopup="dialog" aria-expanded="false" aria-controls="notifs" aria-label="Notifications"><svg class="ico" aria-hidden="true"><use href="#i-bell"/></svg><span id="bellcount" class="n"></span></button>
+  <button id="pause" data-click="pause" title="Pause live updates (space)">Pause</button>
+  <span class="meta" id="meta">connecting…</span>
+</header>
+
+<section id="notifs" class="notifs" role="dialog" aria-modal="false" aria-labelledby="notif-title" hidden>
+  <div class="nhead"><h2 id="notif-title" tabindex="-1">Notifications</h2>
+    <button data-act="notiall">Mark all read</button><button data-click="closenotifs">Close</button></div>
+  <ul id="notif-list"></ul>
+  <p class="faint nfoot">These appear here only. Pop-ups on this computer use the Notify me button and work only while this page is open. Dismissing a notification never changes a finding.</p>
+</section>
+
+<div id="alertbar" class="alertbar" role="alert" hidden>
+  <b id="alertcount">0</b>
+  <div class="what"><span id="alerttext"></span><small id="alertsub"></small></div>
+  <button data-click="showsev" data-arg="critical">Show them</button>
+  <button data-click="jump" data-arg="priorities">Priorities</button>
+</div>
+
+<div id="results" class="results" hidden>
+  <div class="head"><span id="resulthead"></span><span class="spacer"></span>
+    <span class="meta">enter opens the findings list · esc clears</span>
+    <button data-click="clear">Clear</button></div>
+  <ul id="resultlist"></ul>
+</div>
+
+<div id="loadnotice" class="loadnotice" role="status" hidden>
+  <span id="loadmessage"></span><button data-click="tick">retry now</button>
+</div>
+
+<main id="main" tabindex="-1">
+  <div class="pagehead" data-views="overview"><h1 id="h-overview" tabindex="-1">Overview</h1>
+    <p>Is my computer okay, what needs my attention, what has ARGUS-INSTINCT checked, and what should I do next.</p></div>
+  <div class="licbar" id="licbar" hidden><span id="licbar-text"></span><button data-click="go" data-arg="pricing">See pricing</button></div>
+  <section class="card ap" id="ap" data-views="overview" aria-labelledby="ap-h"><h2 id="ap-h">Your computer at a glance</h2>
+    <div id="ap-body"><p>ARGUS-INSTINCT is reading its investigations…</p></div></section>
+  <section class="ovstatus" id="ov-status" data-views="overview" role="status" aria-live="polite" aria-label="Overall status"><p>Reading the current state…</p></section>
+  <div id="ov-pending" data-views="overview"></div>
+  <div class="ovgrid" data-views="overview">
+    <section class="card" aria-labelledby="ov-attn-h"><h2 id="ov-attn-h">What needs your attention <span class="cnt" id="ov-attn-cnt"></span></h2>
+      <div class="body" id="ov-attn"></div></section>
+    <section class="card" aria-labelledby="ov-chk-h"><h2 id="ov-chk-h">What ARGUS-INSTINCT has checked <span class="cnt" id="ov-chk-cnt"></span></h2>
+      <div class="body" id="ov-checked"></div></section>
+  </div>
+  <section class="card ovnext" data-views="overview" aria-labelledby="ov-next-h"><h2 id="ov-next-h">Your next step</h2>
+    <div class="body" id="ov-next"></div></section>
+  <h2 id="score-details" data-views="overview">Your score, explained</h2>
+  <section class="hero" data-views="overview">
+    <div class="card" id="healthcard">
+      <h2>Security health <span class="cnt" id="healthsub"></span></h2>
+      <div class="body" id="health">computing…</div>
+    </div>
+
+    <div class="card" id="winscard">
+      <h2>Biggest gains next <span class="cnt" id="winscnt"></span></h2>
+      <ul class="wins" id="wins"></ul>
+      <div class="winsfoot" id="winsfoot"></div>
+    </div>
+  </section>
+
+  <div class="card" id="trendcard" data-views="overview">
+    <h2>Verified host score · last 24 hours <span class="cnt" id="trendcnt"></span></h2>
+    <div class="body" id="trend"><div class="empty">waiting for verified samples…</div></div>
+  </div>
+
+  <details class="card" id="how-score" data-views="overview">
+    <summary class="plainsum">How the score is calculated</summary>
+    <div class="body prose">
+      <p>The score is computed from what ARGUS-INSTINCT's checks last observed, grouped into protection areas. Each area loses points for its open findings, and critical and high findings cost far more than medium ones. Low-severity items are inventory, not risk, so they do not lower it.</p>
+      <p>A check that is failing, stale or has never run is <b>not</b> counted as safe. It is shown as unverified and pulls the score down in proportion to how much of the computer is unobserved. A finding you have marked as expected is counted as low, with a reason and an expiry.</p>
+      <p>The score reflects what ARGUS-INSTINCT could check. A low score is not proof of an attack and a high score is not proof of safety.</p>
+    </div></details>
+  <details class="card glossary" id="glossary" data-views="overview">
+    <summary class="plainsum">Words used in ARGUS-INSTINCT</summary>
+    <div class="body"><dl class="glossary">
+      <dt>Collector</dt><dd>One of ARGUS-INSTINCT's checks. Each looks at one area, such as startup items or the firewall, and reports what it found.</dd>
+      <dt>Stale data</dt><dd>A check's last result is too old to trust. It is not counted as checked.</dd>
+      <dt>Persistence</dt><dd>A way for a program to start again after a restart, such as a scheduled task. Normal software uses it, and so does malware.</dd>
+      <dt>Firewall rule</dt><dd>A setting that allows or blocks network connections for a program or port.</dd>
+      <dt>Unsigned program</dt><dd>A program without a publisher's digital signature. Many developer tools are unsigned, so it is a reason to look, not proof of harm.</dd>
+      <dt>Credential exposure</dt><dd>A password or key stored where others might read it. It matters if the credential is real and still active.</dd>
+      <dt>Coverage</dt><dd>How much of the computer ARGUS-INSTINCT's checks are currently able to see.</dd>
+    </dl></div></details>
+  <div class="pagehead" data-views="security"><h1 id="h-security" tabindex="-1">Security</h1>
+    <p>What ARGUS-INSTINCT observed on this computer, with the evidence behind it. These are observations to review, not confirmed attacks.</p></div>
+  <h2 id="priorities" data-views="security">Priorities</h2>
+  <section class="prio" id="prio" data-views="security"></section>
+  <details class="card reviewqueue" id="reviewqueue" data-views="security">
+    <summary>Review queue <span class="cnt" id="reviewcount">loading…</span></summary>
+    <div id="jarvisquestions"></div>
+    <div id="fix"></div>
+  </details>
+
+  <div class="card" id="findings-section" data-views="security">
+    <h2>
+      <span>Findings</span>
+      <span class="cnt" id="findcnt"></span>
+      <span class="spacer"></span>
+      <span class="segmented" id="filters"></span>
+    </h2>
+    <div class="findtools">
+      <span class="filters">
+        <select id="jobsel" data-change="filter"><option value="">All collectors</option></select>
+        <select id="hostsel" data-change="filter">
+          <option value="">Both hosts</option><option value="win">Windows</option>
+          <option value="wsl">WSL</option>
+        </select>
+        <button id="grp" data-click="group">Group by collector</button>
+        <span class="meta" id="filtermeta"></span>
+      </span>
+    </div>
+    <div class="scroll vscroll" id="findings"></div>
+  </div>
+
+  <div class="pagehead" data-views="accounts"><h1 id="h-accounts" tabindex="-1">Accounts</h1>
+    <p>Sign-ins, stored credentials and hidden accounts. Sensitive values are always masked.</p></div>
+  <section class="card" data-views="accounts" aria-labelledby="acc-h"><h2 id="acc-h">Account and credential observations <span class="cnt" id="acc-cnt"></span></h2>
+    <div class="body" id="acc-list"></div></section>
+
+  <div class="pagehead" data-views="network"><h1 id="h-network" tabindex="-1">Network</h1>
+    <p>Connections, firewall rules, traffic and where this device is.</p></div>
+  <section class="card" data-views="network" aria-labelledby="net-h"><h2 id="net-h">Network observations <span class="cnt" id="net-cnt"></span></h2>
+    <div class="body" id="net-list"></div></section>
+
+  <div class="pagehead" data-views="monitoring"><h1 id="h-monitoring" tabindex="-1">Monitoring</h1>
+    <p>Is ARGUS-INSTINCT's own checking working? This is separate from security findings: a check that is not running means a blind spot, not an attack.</p></div>
+  <section class="card" id="detectorcard" data-views="monitoring" aria-labelledby="dh-h"><h2 id="dh-h">Monitoring health <span class="cnt" id="detectorsub"></span></h2>
+    <div class="body" id="detectors" aria-live="polite">Checking…</div></section>
+  <section class="card" id="linkscard" data-views="monitoring" aria-labelledby="links-h"><h2 id="links-h">Connections <span class="cnt" id="linkssub"></span></h2>
+    <div class="body" id="links" aria-live="polite">Checking…</div></section>
+  <details class="section" id="monitoring" data-views="monitoring" open>
+    <summary>Monitoring <span class="cnt" id="moncnt">collectors · performance · coverage</span></summary>
+    <div class="grid">
+  <div class="tiles" id="tiles"></div>
+
+  <div class="card">
+    <h2>Live performance <span class="cnt" id="perfcnt">daemon and collector duty cycle</span></h2>
+    <div class="body" id="performance"><div class="empty">sampling…</div></div>
+  </div>
+
+  <div class="card" id="continuitycard">
+    <h2>Continuity <span class="cnt" id="contcnt">invariants · governor · perception</span></h2>
+    <div class="body" id="continuity"><div class="empty">evaluating…</div></div>
+  </div>
+
+  <div class="card" id="activitycard">
+    <h2>Activity <span class="cnt" id="actcnt">correlated stories, not alert streams</span></h2>
+    <div class="body" id="activity"><div class="empty">correlating…</div></div>
+  </div>
+
+  <div class="row split">
+    <div class="card">
+      <h2>Collectors <span class="cnt" id="jobcnt"></span></h2>
+      <div class="body" id="jobs"></div>
+    </div>
+    <div class="card">
+      <h2>Findings over the last 24 hours</h2>
+      <div class="body">
+        <div class="chart" id="chart"></div>
+        <div class="legend">
+          <span><i style="background:var(--crit)"></i>critical</span>
+          <span><i style="background:var(--high)"></i>high</span>
+          <span><i style="background:var(--med)"></i>medium</span>
+          <span><i style="background:var(--low)"></i>low</span>
+          <span class="spacer"></span>
+          <span id="chartmeta"></span>
+        </div>
+        <div class="catgrid" id="cats"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="attackcard">
+    <h2>ATT&amp;CK coverage <span class="cnt" id="attackcnt"></span></h2>
+    <div class="body" id="attack"><div class="empty">measuring…</div></div>
+  </div>
+    </div>
+  </details>
+
+  <div class="pagehead" data-views="assistant"><h1 id="h-assistant" tabindex="-1">Assistant</h1>
+    <p>Ask, listen, decide · local model · takes no action. Ask in plain language: answers come from your real ARGUS-INSTINCT data, and nothing changes without your approval.</p></div>
+  <details class="section" id="assistant" data-views="assistant" open>
+    <summary>Assistant <span class="cnt">ask, listen, decide · local model · takes no action</span></summary>
+    <div class="grid">
+    <div class="card jarvis" id="chatcard">
+      <h2>ARGUS-INSTINCT <span class="cnt">local data · offline model · takes no action</span>
+        <span class="spacer"></span>
+        <select id="voicesel" data-change="voicepick" title="Speaking voice" aria-label="Speaking voice"></select>
+      </h2>
+      <div class="voicebar">
+        <button id="voice" data-click="voice" title="Spoken security briefing (press v to re-brief)">Voice</button>
+        <button data-click="runall" title="Run every collector now">Run all</button>
+        <span class="orb" id="orb" aria-hidden="true"></span>
+        <div class="caption" id="caption" aria-live="polite">Voice is off.
+          <small>Press <kbd>v</kbd> for a spoken briefing.</small></div>
+        <button data-click="brief">Brief me</button>
+      </div>
+      <div class="opener" id="opener"></div>
+      <p class="suggest-h" id="suggest-h">Try asking</p>
+      <div class="suggest" role="group" aria-labelledby="suggest-h">
+        <button data-ask="Is my computer okay?">Is my computer okay?</button>
+        <button data-ask="What needs my attention first?">What needs my attention first?</button>
+        <button data-ask="Explain this finding in simple language.">Explain this finding in simple language</button>
+        <button data-ask="Why is ARGUS-INSTINCT showing this warning?">Why is ARGUS-INSTINCT showing this warning?</button>
+        <button data-ask="Which checks are not working?">Which checks are not working?</button>
+        <button data-ask="What can I safely do next?">What can I safely do next?</button>
+        <button data-ask="What does my security score mean?">What does my security score mean?</button>
+      </div>
+      <details class="moreq"><summary>More questions</summary><div class="suggest">
+        <button data-ask="What did ARGUS find?">What did ARGUS find?</button>
+        <button data-ask="Should I be worried about this?">Should I be worried about this?</button>
+        <button data-ask="Why is this item marked serious?">Why is this item marked serious?</button>
+        <button data-ask="What happens if I approve this?">What happens if I approve this?</button>
+        <button data-ask="Can this damage my computer?">Can this damage my computer?</button>
+        <button data-ask="How do I investigate this safely?">How do I investigate this safely?</button>
+        <button data-ask="What has ARGUS not checked?">What has ARGUS not checked?</button>
+        <button data-ask="Why is my computer showing a monitoring warning?">Why is my computer showing a monitoring warning?</button>
+      </div></details>
+      <div class="chat-answer" id="askanswer" aria-live="polite">ARGUS-INSTINCT is reading the current state…</div>
+      <form class="chat" data-submit="ask">
+        <input id="askq" autocomplete="off" maxlength="4000" aria-label="Ask ARGUS-INSTINCT"
+               placeholder="Ask anything, for example: Is my computer okay?">
+        <button id="askbtn" type="submit">Ask</button>
+      </form>
+      <p class="modelline"><span id="modelstatus" aria-live="polite">Local AI has not been checked yet. Basic assistance is working.</span>
+        <button data-click="checkmodel">Check local AI</button></p>
+      <div class="quick"><button data-click="coach"
+        title="The deterministic plan: weakest area, each task's projected points, all from live data">How do I raise my score?</button></div>
+    </div>
+
+    </div>
+  </details>
+
+  <div class="pagehead" data-views="pricing"><h1 id="h-pricing" tabindex="-1">Pricing</h1>
+    <p>Pay monthly or save with a year. Your data stays on this computer, and protection works the same with or without a licence.</p></div>
+  <section class="card" data-views="pricing" aria-labelledby="pr-h"><h2 id="pr-h">ARGUS-INSTINCT licence <span class="lic" id="lic-state">checking…</span></h2>
+    <div class="plans">
+      <div class="plan"><h3>ARGUS-INSTINCT Monthly</h3>
+        <div class="price">$15 <small>per month</small></div>
+        <ul>
+          <li>Continuous monitoring of this computer</li>
+          <li>Plain-language assistant, with local AI</li>
+          <li>Investigate any finding with one click</li>
+          <li>Approvals, reports and daily briefing</li>
+          <li>Cancel any time; renews monthly</li>
+        </ul>
+        <button id="lic-buy-month" data-click="subscribe" data-arg="month">Subscribe — $15/month</button>
+      </div>
+      <div class="plan feat"><h3>ARGUS-INSTINCT Yearly</h3>
+        <div class="price">$79 <small>per year</small></div>
+        <p class="faint">Best value: save $101 a year compared with paying monthly.</p>
+        <ul>
+          <li>Continuous monitoring of this computer</li>
+          <li>Plain-language assistant, with local AI</li>
+          <li>Investigate any finding with one click</li>
+          <li>Approvals, reports and daily briefing</li>
+          <li>Cancel any time; renews yearly</li>
+        </ul>
+        <button id="lic-buy-year" data-click="subscribe" data-arg="year">Subscribe — $79/year</button>
+        <p id="lic-msg" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <p class="faint"><label for="lic-promo">Promo code (optional)</label>
+      <input id="lic-promo" type="text" maxlength="40" autocomplete="off" spellcheck="false" aria-describedby="lic-promo-note">
+      <span id="lic-promo-note">Prices shown are before any promo code. The code is checked at checkout, where you can also enter one.</span></p>
+    <p class="faint">Checkout opens at pay.archymedes.xyz (the Archymedes licence service, payment by Stripe); this computer activates by itself once it is paid. ARGUS-INSTINCT never sees or stores your card details. Servers and teams: <button class="linkbtn" data-click="licpage" data-arg="buy/argus-server">buy Argus Server on the website</button>.</p>
+  </section>
+
+  <div class="pagehead" data-views="settings"><h1 id="h-settings" tabindex="-1">Settings</h1>
+    <p>Setup, alerts and what stays on this computer. Appearance and notifications are in the top bar.</p></div>
+  <section class="card" data-views="settings" aria-labelledby="priv-h"><h2 id="priv-h">Privacy and data</h2>
+    <div class="body prose">
+      <p>The dashboard is served only on this computer's own address (127.0.0.1). It loads nothing from other websites.</p>
+      <p>The assistant's local model is only contacted on this computer; other addresses are refused. If it is not running, the assistant still answers from ARGUS-INSTINCT's own data.</p>
+      <p>Secret-looking values such as keys, tokens and passwords are masked wherever findings are shown here.</p>
+    </div></section>
+  <section class="card" data-views="settings" aria-labelledby="det-h"><h2 id="det-h">Detail level and notifications</h2>
+    <div class="body prose">
+      <p><b>Simple</b> shows plain language first and keeps technical evidence one click away. <b>Advanced</b> opens the technical sections and shows identifiers. It is one interface with two depths, and the choice is remembered in this browser only.</p>
+      <p>Notifications are listed in the bell in the top bar: new serious findings, monitoring problems, proposals that need your approval, investigation updates and action results. An unchanged finding is announced once. They are in-app only. The Notify me button adds pop-ups for new critical findings, and those work only while this page is open: ARGUS-INSTINCT has no background notifier.</p>
+      <p>Anything that could change something is shown in a confirmation first, with the risk, whether it can be undone and what happens if you do nothing. Closing it, pressing Escape, or letting it expire changes nothing.</p>
+    </div></section>
+  <div class="grid" id="more" data-views="network security settings">
+  <div class="card" id="geocard" data-views="network">
+    <h2>GeoSecurity
+      <span class="cnt" id="geocnt">device location · trusted zones</span>
+      <span class="spacer"></span>
+      <a class="linkbtn" href="/geo">Open full view</a>
+    </h2>
+    <iframe id="geoframe" class="geoframe" src="/geo" title="GeoSecurity globe" loading="lazy"></iframe>
+  </div>
+
+  <div class="row split">
+    <div class="card" data-views="security">
+      <h2>Verified clean <span class="cnt" id="checkcnt"></span></h2>
+      <div class="scroll vscroll" id="checks"></div>
+    </div>
+    <div class="card" data-views="network settings">
+      <h2>
+        <span class="tabs">
+          <button id="tab-peers" class="on" data-click="tab" data-arg="peers">Peers</button>
+          <button id="tab-internet" data-click="tab" data-arg="internet">Traffic</button>
+          <button id="tab-events" data-click="tab" data-arg="events">Alerts</button>
+          <button id="tab-intel" data-click="tab" data-arg="intel">Threat intel</button>
+          <button id="tab-ops" data-click="tab" data-arg="ops">Setup</button>
+        </span>
+      </h2>
+      <div class="scroll vscroll" id="side"></div>
+    </div>
+  </div>
+
+  <div class="card" data-views="settings">
+    <h2>Database</h2>
+    <div class="body meta" id="dbinfo"></div>
+  </div>
+    </div>
+</main>
+</div>
+</div>
+<dialog id="approval" class="approval" aria-labelledby="ap-title"><div id="ap-body"></div><div class="apactions" id="ap-actions"></div></dialog>
+<div id="tip" role="tooltip"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="/static/session.js"></script>
+<script src="/static/dashboard.js"></script>
+</body>
+</html>

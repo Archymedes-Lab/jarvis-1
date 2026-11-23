@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>ARGUS-INSTINCT · World watch</title>
+<style>
+  :root {
+    --bg: #02050b; --ink: #e6f1ff; --ink-2: #9db2d3; --ink-3: #5f7396;
+    --hud: #5fd4ff; --hud-dim: rgba(95, 212, 255, .22); --panel: rgba(6, 12, 24, .62);
+    --news: #ff5a4e; --video: #ffb648; --event: #8fa3c8; --zone: #ff7a45; --me: #39e6c8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); overflow: hidden;
+    font: 12.5px/1.45 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; }
+  canvas#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: grab;
+    transition: filter .8s; }
+  canvas#scene.dragging { cursor: grabbing; }
+  canvas#scene.aim { cursor: crosshair; }
+  body[data-link="stale"] canvas#scene, body[data-link="down"] canvas#scene { filter: grayscale(.85) brightness(.8); }
+  .num { font-variant-numeric: tabular-nums; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  a { color: inherit; }
+
+  /* A HUD frame: hairline, translucent, with bracket corners. */
+  .hud { position: fixed; background: var(--panel); border: 1px solid var(--hud-dim);
+    backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); }
+  .hud::before, .hud::after { content: ""; position: absolute; width: 10px; height: 10px;
+    border: 1px solid var(--hud); pointer-events: none; }
+  .hud::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+  .hud::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+  h1, h2 { margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: .18em; }
+  h1 { font-size: 12px; color: var(--ink); }
+  h2 { font-size: 10px; color: var(--ink-3); margin-bottom: 8px; }
+
+  #head { top: 18px; left: 18px; width: 320px; padding: 14px 16px; }
+  #head .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  #link { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: .14em; color: var(--ink-3); }
+  #link i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+  body[data-link="live"] #link i { background: var(--me); box-shadow: 0 0 10px var(--me); }
+  body[data-link="stale"] #link i { background: var(--video); }
+  body[data-link="down"] #link i { background: var(--news); }
+  #stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 10px; }
+  #stats b { display: block; font-size: 26px; line-height: 1; font-weight: 600; letter-spacing: -.01em; }
+  #stats span { color: var(--ink-3); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  #note { color: var(--ink-3); font-size: 11px; }
+  #nav { margin-top: 10px; display: flex; gap: 12px; font-size: 11px; color: var(--ink-2); }
+  #nav a { text-decoration: none; border-bottom: 1px solid var(--hud-dim); }
+
+  #side { top: 214px; left: 18px; width: 320px; bottom: 128px; padding: 14px 6px 10px 16px; display: flex; flex-direction: column; }
+  #side .scroll { overflow: auto; flex: 1; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--hud-dim) transparent; }
+  .zrow, .lrow { display: block; width: 100%; text-align: left; background: none; border: 0; color: inherit; font: inherit;
+    padding: 7px 8px; margin: 0 0 2px -8px; border-left: 2px solid transparent; cursor: pointer; }
+  .zrow:hover, .lrow:hover, .zrow:focus-visible, .lrow:focus-visible { background: rgba(95, 212, 255, .07); border-left-color: var(--hud); outline: 0; }
+  .zrow b { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+  .zrow b span { color: var(--zone); }
+  .zrow small, .lrow small { color: var(--ink-3); font-size: 11px; display: block; }
+  .zbar { height: 2px; background: var(--hud-dim); margin-top: 5px; }
+  .zbar i { display: block; height: 100%; background: var(--zone); }
+  .lrow { color: var(--ink-2); }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  .dot.news { background: var(--news); } .dot.video { background: var(--video); } .dot.event { background: var(--event); }
+  #near { margin: 8px 10px 0 0; padding-top: 8px; border-top: 1px solid var(--hud-dim); color: var(--ink-2); font-size: 11.5px; }
+  #near b { color: var(--me); font-weight: 600; }
+  #find { background: rgba(2, 6, 14, .6); border: 1px solid var(--hud-dim); color: var(--ink); font: inherit; padding: 6px 9px; margin-right: 10px; }
+  #find:focus { outline: 0; border-color: var(--hud); }
+  #found { color: var(--ink-3); font-size: 11px; min-height: 16px; margin: 4px 0 8px; }
+  .hist { display: flex; align-items: flex-end; gap: 3px; height: 38px; margin: 10px 0 2px; }
+  .hist i { flex: 1; background: var(--zone); opacity: .75; }
+  .histaxis { color: var(--ink-3); font-size: 9.5px; letter-spacing: .08em; margin-bottom: 8px; }
+  .empty { color: var(--ink-3); padding: 4px 0 10px; }
+
+  #tools { top: 18px; right: 18px; padding: 8px; display: flex; gap: 6px; align-items: center; }
+  #tools button { background: none; color: var(--ink-3); border: 1px solid transparent; font: inherit; font-size: 11px;
+    letter-spacing: .1em; text-transform: uppercase; padding: 5px 9px; cursor: pointer; }
+  #tools button[aria-pressed="true"] { color: var(--ink); border-color: var(--hud-dim); background: rgba(95, 212, 255, .08); }
+  #tools button:focus-visible { outline: 1px solid var(--hud); }
+  #tools .sep { width: 1px; height: 18px; background: var(--hud-dim); }
+
+  #detail { top: 70px; right: 18px; width: 360px; max-height: calc(100% - 210px); padding: 14px 6px 12px 16px; display: none; flex-direction: column; }
+  #detail.open { display: flex; }
+  #detail .scroll { overflow: auto; padding-right: 10px; scrollbar-width: thin; scrollbar-color: var(--hud-dim) transparent; }
+  #close { position: absolute; top: 8px; right: 8px; background: none; border: 0; color: var(--ink-3); cursor: pointer; font-size: 13px; }
+  .title { font-size: 17px; font-weight: 600; line-height: 1.2; margin: 0 22px 4px 0; }
+  .badge { display: inline-block; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; padding: 1px 6px;
+    border: 1px solid var(--hud-dim); color: var(--hud); margin-right: 6px; }
+  .badge.warn { color: var(--video); border-color: rgba(255, 182, 72, .4); }
+  .meta { color: var(--ink-3); font-size: 11px; margin: 6px 0 10px; }
+  .caveat { color: var(--ink-3); font-size: 11px; border-left: 2px solid var(--hud-dim); padding-left: 8px; margin: 8px 0; }
+  .rep { padding: 8px 0; border-top: 1px solid rgba(95, 212, 255, .1); }
+  .rep a { text-decoration: none; color: var(--ink); font-weight: 500; display: block; }
+  .rep a:hover { color: var(--hud); }
+  .rep p { margin: 3px 0 0; color: var(--ink-2); font-size: 11.5px; }
+  .rep small { color: var(--ink-3); font-size: 10.5px; display: block; }
+
+  #tip { padding: 10px 12px; width: 300px; pointer-events: none; display: none; z-index: 5; }
+  #tip .title { font-size: 14px; margin-right: 0; }
+  #tip .rep { padding: 5px 0; }
+  #tip .rep span { color: var(--ink); display: block; }
+  #tip .hint { color: var(--ink-3); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; margin-top: 6px; }
+
+  #time { left: 18px; right: 18px; bottom: 18px; padding: 10px 16px 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+  #play { background: none; border: 1px solid var(--hud-dim); color: var(--ink); width: 30px; height: 30px; cursor: pointer; font-size: 11px; }
+  #track { position: relative; height: 44px; }
+  #bars { position: absolute; inset: 13px 0 12px 0; display: flex; align-items: flex-end; gap: 1px; }
+  #bars i { flex: 1; background: var(--hud-dim); min-height: 1px; }
+  #bars i.on { background: var(--news); opacity: .8; }
+  #scrub { position: absolute; left: 0; right: 0; bottom: -4px; width: 100%; margin: 0; accent-color: var(--hud); }
+  #axis { position: absolute; left: 0; right: 0; top: -2px; display: flex; justify-content: space-between; color: var(--ink-3); font-size: 9.5px; letter-spacing: .1em; pointer-events: none; }
+  #asof { min-width: 150px; text-align: right; color: var(--ink-2); }
+  #asof b { display: block; color: var(--ink); font-weight: 600; }
+
+  #banner { top: 18px; left: 50%; transform: translateX(-50%); padding: 8px 14px; display: none; color: var(--video); max-width: 46vw; text-align: center; }
+  #sources { position: fixed; right: 18px; bottom: 96px; color: var(--ink-3); font-size: 10.5px; text-align: right; cursor: help; }
+  #tags { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .tag { position: absolute; transform: translate(-50%, -150%); white-space: nowrap; font-size: 10px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--zone); text-shadow: 0 0 6px #000, 0 0 2px #000; }
+  .tag.me { color: var(--me); transform: translate(-50%, 90%); }
+  .tag.arc { color: var(--me); letter-spacing: .06em; text-transform: none; }
+  @media (max-width: 900px) { #side { display: none; } #detail { width: calc(100% - 36px); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body data-link="down">
+<canvas id="scene" aria-label="Three-dimensional world map of reported armed conflict. The lists on this page carry the same reports as text."></canvas>
+<div id="tags"></div>
+
+<section class="hud" id="head">
+  <div class="row"><h1>World watch</h1><span id="link" role="status"><i></i><span id="linktext">connecting</span></span></div>
+  <div id="stats">
+    <div><b class="num" id="nzones">–</b><span>zones</span></div>
+    <div><b class="num" id="nplaced">–</b><span>placed</span></div>
+    <div><b class="num" id="nreports">–</b><span>reports, 72 h</span></div>
+  </div>
+  <div id="note">Reported armed conflict from public newsrooms. Context only: it says nothing about this machine.</div>
+  <div id="nav"><a href="/geo">GeoSecurity</a><a href="/coverage">Coverage</a><a href="/">Dashboard</a></div>
+</section>
+
+<nav class="hud" id="side" aria-label="Conflict zones and latest reports">
+  <input id="find" type="search" placeholder="Find a place in the reports" aria-label="Find a place in the collected reports" autocomplete="off">
+  <div id="found" role="status"></div>
+  <div class="scroll">
+    <h2>Zones by report volume</h2><div id="zlist"></div>
+    <h2 style="margin-top:14px">Latest reports</h2><div id="llist"></div>
+  </div>
+  <div id="near"></div>
+</nav>
+
+<div class="hud" id="tools" role="toolbar" aria-label="Layers and view">
+  <button id="l-news" aria-pressed="true" title="Newsroom articles">News</button>
+  <button id="l-video" aria-pressed="true" title="Newsroom videos">Video</button>
+  <button id="l-zones" aria-pressed="true" title="Outlines where located reports cluster">Zones</button>
+  <button id="l-events" aria-pressed="false" title="All GDELT machine-coded events. Their positions are unverified.">Unverified</button>
+  <span class="sep"></span>
+  <button id="flat" aria-pressed="false" title="Unfold the globe into a flat map (F)">Map</button>
+  <button id="spin" aria-pressed="false">Rotate</button>
+  <button id="home" title="Return to the starting view">Reset</button>
+</div>
+
+<section class="hud" id="detail" aria-live="polite"><button id="close" aria-label="Close">✕</button><div class="scroll" id="dbody"></div></section>
+<div class="hud" id="tip" role="tooltip"></div>
+<div class="hud" id="banner" role="status"></div>
+<div id="sources" class="num"></div>
+
+<section class="hud" id="time" aria-label="Timeline of reports">
+  <button id="play" aria-label="Replay the last 72 hours">▶</button>
+  <div id="track">
+    <div id="axis"><span>72 h ago</span><span>48 h</span><span>24 h</span><span>now</span></div>
+    <div id="bars" aria-hidden="true"></div>
+    <input id="scrub" type="range" min="0" max="288" value="288" step="1" aria-label="Show reports up to this time">
+  </div>
+  <div id="asof" class="num"><b id="asofb">Now</b><span id="asofs">all reports of the last 72 h</span></div>
+</section>
+
+<script src="/static/session.js"></script>
+<script type="module" src="/static/world.js"></script>
+</body>
+</html>

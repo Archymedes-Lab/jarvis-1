@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>JARVIS Veil Sensor</title>
+<style>body{font:14px system-ui,sans-serif;max-width:42rem;margin:1.5rem auto;padding:0 1rem;line-height:1.45}fieldset{margin:1rem 0}textarea{width:100%;min-height:5rem}small{color:#555}</style>
+<h1>JARVIS Veil</h1>
+<fieldset><legend>Reporting to JARVIS</legend>
+<label>Pairing token <input id="token" type="password" autocomplete="off"></label>
+<p><small>Sends aggregate metadata (counters and origins) to JARVIS on this machine only. Never page text, typed characters, pointer positions, cookies, paths or query strings.</small></p>
+</fieldset>
+<fieldset><legend>Blocking (off by default)</legend>
+<label><input type="checkbox" id="replay"> Block session recorders</label>
+<p><small>Hotjar, Microsoft Clarity, FullStory, LogRocket, Mouseflow, Smartlook, Contentsquare, Yandex Webvisor and similar. They record your mouse movement, clicks, scrolling and, where a site forgets to mask it, what you type. Blocking them can remove a site's feedback survey; it never stops a page loading.</small></p>
+<label><input type="checkbox" id="pixels"> Block tracking pixels</label>
+<p><small>Known ad and analytics pixel endpoints (Meta, Google Analytics, Bing, LinkedIn, TikTok, Pinterest, X, Snapchat) and mail-open pixels. Conversion tracking stops working; pages and links do not.</small></p>
+<label>Always allow these sites (one per line)<textarea id="allow" spellcheck="false" placeholder="example.com"></textarea></label>
+<p><small>The toolbar badge shows how many requests were blocked on the current tab. Untick a box to undo it at once.</small></p>
+</fieldset>
+<button id="save">Save</button> <span id="status" role="status"></span>
+<script type="module" src="options.js"></script>

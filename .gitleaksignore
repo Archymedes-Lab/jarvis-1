@@ -1,0 +1,59 @@
+# Gitleaks false-positive dispositions, reviewed 2026-11-10 (see docs/security/ARGUS-SECURITY-TESTING.md).
+# Exact fingerprints only (commit:file:rule:line). A new secret, or the same text at another
+# line or commit, still fails the scan. tests/security_campaign guards this file's shape.
+# synthetic test vector (keys generated per run or detector fixtures)
+765c07ddf4bc31498f1d4495aa36877f24849588:hosted/notify-cloudflare/tests/vectors.json:generic-api-key:40
+# synthetic test vector (keys generated per run or detector fixtures)
+0d4202ffa1a957843f2aad31c3069fb589ea5b63:hosted/notify-cloudflare/tests/vectors.json:generic-api-key:55
+# synthetic test vector (keys generated per run or detector fixtures)
+8de9d7fb4f3a35619df72c3e5fb023870d5a9bec:hosted/notify-cloudflare/tests/vectors.json:generic-api-key:55
+# synthetic test vector (keys generated per run or detector fixtures)
+0d4202ffa1a957843f2aad31c3069fb589ea5b63:hosted/notify-cloudflare/tests/vectors.json:generic-api-key:58
+# synthetic test vector (keys generated per run or detector fixtures)
+8de9d7fb4f3a35619df72c3e5fb023870d5a9bec:hosted/notify-cloudflare/tests/vectors.json:generic-api-key:58
+# VAPID public key (public by design; private key is a Wrangler secret)
+765c07ddf4bc31498f1d4495aa36877f24849588:hosted/notify-cloudflare/wrangler.jsonc:generic-api-key:24
+# synthetic OpenSSH key body built for an attack-map sample
+0f0031da7c04c1182a480c63a0bf5d8e122be125:jarvis/service/attackmap.py:private-key:105
+# synthetic OpenSSH key body built for an attack-map sample
+df74a4962226b6b770870b7daad064adabf32e22:jarvis/service/attackmap.py:private-key:105
+# public Ubuntu cloud-image signing key fingerprint
+9150bb488a0bfe4ed8cb7401d9387d4645cabc00:release/vmtest/fetch_image.py:generic-api-key:36
+# public Ubuntu cloud-image signing key fingerprint
+dd42eb0e794cc78bffb34fd936c47e89636f8339:release/vmtest/fetch_image.py:generic-api-key:36
+# synthetic VM-test canary marker
+9150bb488a0bfe4ed8cb7401d9387d4645cabc00:release/vmtest/guest.py:generic-api-key:399
+# synthetic VM-test canary marker
+dd42eb0e794cc78bffb34fd936c47e89636f8339:release/vmtest/guest.py:generic-api-key:399
+# synthetic test vector (keys generated per run or detector fixtures)
+64d65097e6089127dbba625a6605ebd5922066c2:tests/fixtures/licence/vectors.json:jwt:212
+# synthetic test vector (keys generated per run or detector fixtures)
+c7d77783025e9a6d26b0224ae746249194fb6d15:tests/fuzz/test_fuzz_wave1.py:generic-api-key:45
+# synthetic test vector (keys generated per run or detector fixtures)
+7a28bd06607213c5e1dca1f0305abadcf9b7831c:tests/test_decide_bridge.py:generic-api-key:54
+# synthetic test vector (keys generated per run or detector fixtures)
+a1586b24395d31f6981a3eb1811a23d717190f96:tests/test_parser_hardening.py:private-key:91
+# synthetic test vector (keys generated per run or detector fixtures)
+a1586b24395d31f6981a3eb1811a23d717190f96:tests/test_parser_hardening.py:private-key:99
+# synthetic test vector (keys generated per run or detector fixtures)
+bd0c422d302122940ef4ca53d972beef2446d317:tests/test_release_gate.py:private-key:170
+# synthetic test vector (keys generated per run or detector fixtures)
+bd0c422d302122940ef4ca53d972beef2446d317:tests/test_release_gate.py:aws-access-token:183
+# synthetic test vector (keys generated per run or detector fixtures)
+0f0031da7c04c1182a480c63a0bf5d8e122be125:tests/test_secrets.py:private-key:29
+# synthetic test vector (keys generated per run or detector fixtures)
+43a7292efe2209a3d23b68afcccc7514d5a89528:tests/test_secrets.py:private-key:29
+# synthetic test vector (keys generated per run or detector fixtures)
+0f0031da7c04c1182a480c63a0bf5d8e122be125:tests/test_secrets.py:private-key:45
+# synthetic test vector (keys generated per run or detector fixtures)
+43a7292efe2209a3d23b68afcccc7514d5a89528:tests/test_secrets.py:private-key:45
+# synthetic test vector (keys generated per run or detector fixtures)
+0f0031da7c04c1182a480c63a0bf5d8e122be125:tests/test_secrets.py:generic-api-key:65
+# synthetic test vector (keys generated per run or detector fixtures)
+43a7292efe2209a3d23b68afcccc7514d5a89528:tests/test_secrets.py:generic-api-key:65
+# synthetic test vector (keys generated per run or detector fixtures)
+0f0031da7c04c1182a480c63a0bf5d8e122be125:tests/test_secrets.py:generic-api-key:91
+# synthetic test vector (keys generated per run or detector fixtures)
+43a7292efe2209a3d23b68afcccc7514d5a89528:tests/test_secrets.py:generic-api-key:91
+# synthetic test vector (keys generated per run or detector fixtures)
+bb33a45a07ace15c8c545af888de153b858ca623:tests/test_websocket.py:generic-api-key:91

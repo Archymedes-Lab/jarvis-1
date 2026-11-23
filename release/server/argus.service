@@ -1,0 +1,53 @@
+[Unit]
+Description=Argus - server process, network, access and persistence monitoring
+Documentation=https://www.archymedes.xyz/en/solutions/argus/
+After=network-online.target
+Wants=network-online.target
+# A security monitor that gives up after a crash loop is silent when it matters.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=argus
+Group=argus
+Environment=HOME=/var/lib/argus
+EnvironmentFile=-/etc/argus/argus.env
+WorkingDirectory=/
+# A native binary: no interpreter, no import path to redirect. Before it loads
+# any Argus code it checks that every file of /opt/argus/bin and every
+# directory above it is root-owned and not writable by anyone else. If not, it
+# drops the capabilities below and says so.
+ExecStart=/opt/argus/bin/argus-server serve --port ${ARGUS_PORT}
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+# The scheduler pings systemd while it is making progress; a wedged daemon is
+# killed and restarted. Generous because threat-intel refreshes can be slow.
+WatchdogSec=900
+NotifyAccess=main
+
+# Least privilege that still sees the whole machine, read-only:
+#   CAP_SYS_PTRACE       other accounts' /proc/<pid>/{fd,maps,environ,exe}
+#   CAP_DAC_READ_SEARCH  root-only files (sshd_config, sudoers, shadow metadata)
+#   CAP_SYSLOG           kernel addresses in /proc/kallsyms and /proc/modules
+# Argus clears the ambient set at startup, so nothing it launches inherits them.
+AmbientCapabilities=CAP_SYS_PTRACE CAP_DAC_READ_SEARCH CAP_SYSLOG
+CapabilityBoundingSet=CAP_SYS_PTRACE CAP_DAC_READ_SEARCH CAP_SYSLOG
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/argus
+PrivateTmp=yes
+ProtectHome=read-only
+
+# A server's workload comes first: Argus takes a modest share under contention,
+# and is the last thing the OOM killer reaches for.
+Nice=0
+CPUWeight=50
+IOWeight=50
+OOMScoreAdjust=-500
+MemoryHigh=768M
+MemoryMax=1G
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target

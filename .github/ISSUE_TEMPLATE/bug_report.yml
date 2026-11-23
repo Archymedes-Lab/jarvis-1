@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a reproducible problem using synthetic evidence.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For suspected vulnerabilities, use SECURITY.md instead of this form.
+        Use synthetic examples. Do not attach live security reports, databases,
+        logs, credentials, customer details or personal files.
+  - type: input
+    id: version
+    attributes:
+      label: Version or source commit
+      description: Include the installation method and whether this is a modified build.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: OS version and native, WSL or container environment. Omit machine and account names.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Synthetic reproduction
+      description: Give the smallest steps another developer can run in a disposable environment.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected and observed behavior
+      description: Include a sanitized error, frequency, and whether a safe workaround exists.
+    validations:
+      required: true

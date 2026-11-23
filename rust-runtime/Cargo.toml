@@ -1,0 +1,23 @@
+[package]
+name = "jarvis-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "JARVIS Runtime prototype: event ingest, buffering, segment compression, integrity chains, resource metrics/governance. Python remains JARVIS Intelligence."
+# License text: ../LICENSE.txt; scope: ../LICENSING.md.
+license = "PolyForm-Noncommercial-1.0.0"
+publish = false
+
+[[bin]]
+name = "jarvis-runtime"
+path = "src/main.rs"
+
+[lib]
+name = "jarvis_runtime"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+flate2 = "1.0"
+libc = "0.2"

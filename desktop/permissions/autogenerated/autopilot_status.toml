@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-autopilot-status"
+description = "Enables the autopilot_status command without any pre-configured scope."
+commands.allow = ["autopilot_status"]
+
+[[permission]]
+identifier = "deny-autopilot-status"
+description = "Denies the autopilot_status command without any pre-configured scope."
+commands.deny = ["autopilot_status"]

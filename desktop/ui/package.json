@@ -1,0 +1,31 @@
+{
+  "name": "jarvis-desktop-ui",
+  "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "The JARVIS desktop interface. Bundled into the Tauri app; never served by the daemon.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json --threshold error",
+    "test": "bun test src/lib"
+  },
+  "dependencies": {
+    "@lucide/svelte": "1.54.0",
+    "@tauri-apps/api": "2.12.4",
+    "bits-ui": "2.19.5"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@tailwindcss/vite": "4.3.3",
+    "svelte": "5.57.2",
+    "svelte-check": "4.7.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vite": "8.3.5"
+  },
+  "patchedDependencies": {
+    "deepmerge@4.3.1": "patches/deepmerge@4.3.1.patch"
+  }
+}

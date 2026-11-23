@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-phone-pair-start"
+description = "Enables the phone_pair_start command without any pre-configured scope."
+commands.allow = ["phone_pair_start"]
+
+[[permission]]
+identifier = "deny-phone-pair-start"
+description = "Denies the phone_pair_start command without any pre-configured scope."
+commands.deny = ["phone_pair_start"]

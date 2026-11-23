@@ -1,0 +1,8 @@
+# The native server build (release/build_server.py), installed with
+#   pip install --require-hashes --no-build-isolation -r release/requirements-build.txt
+# after build-tools.txt. Pinned by version and SHA-256; at least two weeks old.
+#
+# Nuitka compiles Argus to C and links a standalone native program.
+nuitka==4.3 --hash=sha256:8b102c6bf30d9504e82e69674d396972729092b25cefa680e8fd05678fdfa30b
+# The runtime dependencies, compiled into the program.
+-r requirements-runtime.txt

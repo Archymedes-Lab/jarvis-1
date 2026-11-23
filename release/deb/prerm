@@ -1,0 +1,11 @@
+#!/bin/sh
+# argus-server: on removal, stop and remove the installed program. Upgrades
+# leave it running; the new postinst replaces it in place. History stays in
+# /var/lib/argus until the package is purged.
+set -e
+case "$1" in
+  remove)
+    if [ -x /opt/argus/uninstall.sh ]; then /opt/argus/uninstall.sh; fi
+    ;;
+esac
+exit 0

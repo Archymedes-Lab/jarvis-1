@@ -1,0 +1,14 @@
+#!/bin/sh
+# argus-server: put the release in place with the same verifying installer as
+# the tarball. It refuses a copy that fails its own verification and then keeps
+# the previous installation, so a failed upgrade leaves the server watched.
+# Settings survive upgrades (port, services.conf, the opt-in network sensor).
+# Extra installer options for a first install: ARGUS_INSTALL_ARGS="--net-sensor"
+set -e
+case "$1" in
+  configure)
+    # shellcheck disable=SC2086
+    /usr/share/argus-server/install.sh ${ARGUS_INSTALL_ARGS:-}
+    ;;
+esac
+exit 0

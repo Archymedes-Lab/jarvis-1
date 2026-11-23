@@ -1,0 +1,25 @@
+[
+  {
+    "id": "impact-shadow-delete-t1490",
+    "title": "Inhibit recovery: shadow copies deleted before encryption",
+    "platform": "win",
+    "safety": "synthetic",
+    "source": "synthetic",
+    "techniques": ["T1490"],
+    "provider": "synthetic",
+    "detector": "sysmon",
+    "trigger_events": [1],
+    "spec": {"channel": "sysmon", "events": [
+      {"id": 1, "data": {"ProcessGuid": "{arena-vss}", "ProcessId": "5150",
+        "Image": "C:\\Windows\\System32\\vssadmin.exe",
+        "CommandLine": "vssadmin.exe delete shadows /all /quiet",
+        "ParentImage": "C:\\Windows\\System32\\cmd.exe", "User": "DESKTOP\\chris",
+        "Hashes": "SHA256=1111111111111111111111111111111111111111111111111111111111111111"}}
+    ]},
+    "expect": {
+      "observed": [{"kind": "cmdline", "value": "delete shadows"}],
+      "techniques": ["T1490"],
+      "classified": {"category": "impact", "min_severity": "critical", "title": "recovery"}
+    }
+  }
+]

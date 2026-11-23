@@ -1,0 +1,47 @@
+[package]
+name = "jarvis-desktop"
+version = "2.0.0"
+edition = "2021"
+description = "JARVIS desktop: native window, tray and notifications over the local daemon"
+publish = false
+# License text: ../LICENSE.txt; scope: ../LICENSING.md.
+license = "PolyForm-Noncommercial-1.0.0"
+
+# Exact pins: the shell is part of a security tool, so a dependency changes
+# only when someone reviews the bump (Cargo.lock records the full tree).
+[build-dependencies]
+tauri-build = { version = "=2.7.4", features = [] }
+
+[dependencies]
+tauri = { version = "=2.12.5", features = ["tray-icon"] }
+tauri-plugin-notification = "=2.7.0"
+tauri-plugin-single-instance = "=2.5.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# The Start menu shortcut (src/startmenu.rs). Pinned to the version Tauri already
+# locks, so no new crate enters the build.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "=0.61.3", features = [
+    "Win32_Foundation",
+    "Win32_Storage_EnhancedStorage",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage",
+    "Win32_System_Variant",
+    "Win32_UI_Shell",
+    "Win32_UI_Shell_PropertiesSystem",
+] }
+
+[features]
+# The production asset protocol. `tauri build` enables it implicitly; a plain
+# `cargo build --release` must pass `--features custom-protocol`, and main.rs
+# refuses to compile a release without it (it would be a development build).
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

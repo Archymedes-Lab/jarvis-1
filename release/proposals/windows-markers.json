@@ -1,0 +1,17 @@
+{
+  "_comment": "PROPOSAL, not policy. See windows-third-party-paths.md. Only dry runs (release-test/*) load this file; a tagged build never does. It may replace a marker by id and add digest-pinned exemptions; it cannot add or remove a marker or touch any other list.",
+  "deny_markers": [
+    {
+      "id": "windows-build-path",
+      "regex": "(?i)(?:[A-Z]:\\\\a\\\\Argus-1\\\\|[A-Z]:\\\\actions-runner\\\\)"
+    }
+  ],
+  "marker_exemptions": [
+    {
+      "member": "cryptography/hazmat/bindings/_rust.pyd",
+      "marker": "windows-home-path",
+      "sha256": "1d4332a447cab13dec8e3a533ad579e0e562b79e40822c931f33769758fc7156",
+      "reason": "cryptography 50.0.2 (PyCA) wheel binary; carries its maintainers' CI home folder. Signed vendor file, cannot be rebuilt here. Re-pin on every cryptography update."
+    }
+  ]
+}

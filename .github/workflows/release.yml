@@ -1,0 +1,635 @@
+name: Release build
+
+# Pushing a tag vYYYY.MM.DD[-N] on a commit of main builds a release. Nothing
+# here can publish: the result is a DRAFT GitHub Release in this private
+# repository, which a releaser checks and signs on their own machine
+# (release/sign.py) before publishing it (publish.yml). Every build runs on a
+# clean GitHub runner from the tagged commit only; no laptop builds ship.
+#
+# Stages: verify (static gate + unit suite) -> build (native server in the
+# pinned manylinux_2_28 image, native Windows engine, desktop for Linux and
+# Windows, then the Windows Setup from the engine and the desktop app) ->
+# install tests (the server package on a real systemd host; the Windows Setup
+# on a clean Windows host without WSL) -> assemble (manifest, SHA256SUMS,
+# report, SBOM, content gate) -> draft release.
+#
+# A push to a release-test/* branch runs every stage except the draft: a dry
+# run for changing the build itself.
+on:
+  push:
+    tags: ["v*"]
+    branches: ["release-test/**"]
+
+permissions:
+  contents: read
+
+# A newer push to a release-test branch replaces the run in progress: its
+# result could not be published anyway. A tag's run always finishes.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+# Every job's timeout is about twice what it needs when COLD (a tag, and a new dry-run branch,
+# build cold), and tests/test_ci_spend.py holds both the ceiling and the floor: a hung job is
+# billed until its timeout, and a timeout below a cold build cancels the release. Windows minutes cost 1.7x Linux ones.
+env:
+  RUST_VERSION: "1.97.1"
+  BUN_VERSION: "1.3.14"
+
+jobs:
+  # Seconds: the version, and for a tag that it names a commit on main. The
+  # builds start from here, beside verify rather than after it; nothing is
+  # assembled or drafted unless verify passed (draft needs it).
+  meta:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read   # the dry run's runs and artifacts, for the promotion check below
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      promote_run: ${{ steps.promote.outputs.promote_run }}
+      promote_url: ${{ steps.promote.outputs.promote_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Tag names a version and a commit on main
+        id: v
+        run: |
+          if [ "$GITHUB_REF_TYPE" != tag ]; then
+            echo "dry run from $GITHUB_REF_NAME: no draft will be made"
+            # Publishable as is (owner decision 2026-11-03): the run number keeps
+            # every later dry run newer than an earlier one.
+            echo "version=$(date -u +%Y.%m.%d)-$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          tag="$GITHUB_REF_NAME"
+          [[ "$tag" =~ ^v20[0-9]{2}\.[01][0-9]\.[0-3][0-9](-[0-9]+)?$ ]] || { echo "tag $tag is not vYYYY.MM.DD[-N]"; exit 1; }
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "$GITHUB_SHA is not on main: merge first, then tag"; exit 1; }
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+      # A tag on the commit of a successful dry run does not rebuild: release/promote.py decides
+      # (and refuses a dry run that exists but does not match, naming the tag to use). No dry run
+      # of the commit: promote_run stays empty and the tag builds cold, as before.
+      - name: A verified dry run of this commit to promote (tags only)
+        id: promote
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALLOWED: ${{ vars.ARGUS_PROMOTE_ACTORS }}
+        run: python3 release/promote.py find --repo "$GITHUB_REPOSITORY" --sha "$GITHUB_SHA" --tag-version "${GITHUB_REF_NAME#v}" --actor "$GITHUB_ACTOR" --allowed "$ALLOWED"
+
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Runtime dependencies (pinned by hash)
+        run: python -m pip install --disable-pip-version-check --require-hashes -r release/requirements-runtime.txt
+      - run: scripts/dev/static_gate.sh
+      - run: python scripts/dev/ci_suite.py
+      - name: Host-bound tests were run on their host and signed by a releaser
+        if: github.ref_type == 'tag'
+        env:
+          ARGUS_RELEASE_SIGNERS: ${{ vars.ARGUS_RELEASE_SIGNERS }}
+        run: python release/host_attest.py check
+
+  # Builds pass between jobs through the Actions cache: it costs no account
+  # storage and needs no write token. Each build job records its files'
+  # SHA-256 as a job output, which only it can set; every consumer restores
+  # the entry and checks it against those digests (release/digests.py).
+  server:
+    if: needs.meta.outputs.promote_run == ''
+    needs: meta
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      digests: ${{ steps.digests.outputs.server }}
+      key: ${{ steps.digests.outputs.server_key }}
+    env:
+      # glibc 2.28: the program runs on RHEL 8+, Debian 10+, Ubuntu 20.04+. The
+      # build runs in this image through `docker run`, not as a job container,
+      # so the cache below is saved by the runner (a job container's cache uses
+      # its own compression and cannot be restored on the runner).
+      IMAGE: quay.io/pypa/manylinux_2_28_x86_64@sha256:4131ddd7acb9c6c966af02fe7e71edc51e078c2d41f475966697676430bfa2ae # 2026.10.10-1
+      VERSION: ${{ needs.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Nuitka uses ccache when it is on PATH: object files keyed by compiler,
+      # flags and preprocessed source, so a stale entry can only miss. Dry runs
+      # only; a tag builds cold. Reset above 2 GiB.
+      - name: Restore the compiler cache (dry runs only)
+        if: github.ref_type != 'tag'
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: nuitka-cache
+          key: nuitka-server-${{ github.sha }}
+          restore-keys: nuitka-server-
+      - name: Native server program (in the pinned manylinux image, no network credentials)
+        env:
+          WARM: ${{ github.ref_type != 'tag' && '1' || '' }}
+          CCACHE_VERSION: "4.14.2"   # 2026-10-18
+          CCACHE_SHA256: d540ba01f160addbd3dd5e18eda9bd34005591b095c09ac8ae9d0a1b655e7ef5
+        run: |
+          mkdir -p nuitka-cache ccache-bin
+          if [ -n "$(du -s --block-size=1G nuitka-cache | awk '$1>2')" ]; then rm -rf nuitka-cache/*; echo "over 2 GiB: reset"; fi
+          # ccache's own static build, pinned by SHA-256 (run 41729562271 spent 19
+          # minutes in dnf fetching EPEL metadata for it).
+          if [ -n "$WARM" ]; then
+            curl -fsSL --retry 3 -o ccache.tgz "https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}-linux-x86_64-musl-static.tar.gz"
+            echo "${CCACHE_SHA256}  ccache.tgz" | sha256sum -c -
+            tar xzf ccache.tgz --strip-components=1 -C ccache-bin "ccache-${CCACHE_VERSION}-linux-x86_64-musl-static/ccache"
+          fi
+          docker run --rm -e VERSION -e WARM -v "$PWD:/src" -v "$PWD/nuitka-cache:/nuitka-cache" -v "$PWD/ccache-bin:/opt/ccache:ro" -w /src "$IMAGE" bash -euo pipefail -c '
+            PY=/opt/python/cp312-cp312/bin/python
+            git config --global --add safe.directory /src
+            if [ -n "$WARM" ]; then
+              export PATH=/opt/ccache:$PATH NUITKA_CACHE_DIR=/nuitka-cache CCACHE_BASEDIR=/work CCACHE_NOHASHDIR=1 CCACHE_MAXSIZE=1500M
+            fi
+            (cd /opt/_internal && tar xf static-libs-for-embedding-only.tar.xz)
+            $PY -m pip install --disable-pip-version-check --require-hashes -r release/build-tools.txt
+            $PY -m pip install --disable-pip-version-check --require-hashes --no-build-isolation -r release/requirements-build.txt
+            $PY release/build_server.py --version "$VERSION" --out out/server --jobs 4 --work /work
+            if [ -n "$WARM" ] && command -v ccache >/dev/null; then CCACHE_DIR=$(find /nuitka-cache -maxdepth 2 -type d -name "ccache*" | head -1) ccache -s 2>/dev/null | head -12 || true; fi
+            chown -R '"$(id -u):$(id -g)"' out /nuitka-cache'
+      # Only after a successful build, in every job: restore-keys returns the NEWEST prefix
+      # match, so an empty or partial entry saved by a cancelled or failed run beats the
+      # populated ones (run 42066556800: 0 cache hits for 556 C files, a 37-minute cold compile).
+      - name: Save the compiler cache (dry runs only, after a successful build)
+        if: success() && github.ref_type != 'tag'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: nuitka-cache
+          key: nuitka-server-${{ github.sha }}
+      - name: Record the build's digests
+        id: digests
+        run: python3 release/digests.py record out/server server
+      - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/server
+          key: ${{ steps.digests.outputs.server_key }}
+          enableCrossOsArchive: true
+
+  server-install-test:
+    if: needs.meta.outputs.promote_run == ''
+    needs: [meta, server]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/server
+          key: ${{ needs.server.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - name: The packages are the ones the server build recorded
+        env:
+          DIGESTS: ${{ needs.server.outputs.digests }}
+        run: |
+          python3 release/digests.py verify out/server "$DIGESTS"
+          mkdir -p server && cp out/server/*.tar.gz out/server/*.deb server/
+      - name: Install, run, observe, remove (a real systemd host)
+        run: sudo bash release/install_test.sh server/argus-server-linux-x86_64.tar.gz server/argus-server_*_amd64.deb
+
+  desktop-linux:
+    if: needs.meta.outputs.promote_run == ''
+    needs: meta
+    outputs:
+      digests: ${{ steps.digests.outputs.desktop_linux }}
+      key: ${{ steps.digests.outputs.desktop_linux_key }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      # 11 of this job's 17 minutes were apt (run 41678681959): the runner
+      # rebuilds its man-page index after every install. No pages are needed.
+      - name: Toolchain and WebKitGTK
+        run: |
+          echo 'set man-db/auto-update false' | sudo debconf-communicate >/dev/null
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+          rustup toolchain install "$RUST_VERSION" --profile minimal
+          rustup default "$RUST_VERSION"
+      # Compiled crates kept between dry runs (keyed by the lock file); cargo
+      # rebuilds whatever its fingerprints say changed. A tag builds cold.
+      - name: Restore compiled crates (dry runs only)
+        id: cargo-cache
+        if: github.ref_type != 'tag'
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ runner.temp }}/desktop-target
+          key: cargo-linux-${{ env.RUST_VERSION }}-${{ hashFiles('desktop/Cargo.lock') }}
+          restore-keys: cargo-linux-${{ env.RUST_VERSION }}-${{ hashFiles('desktop/Cargo.lock') }}-
+      - name: Desktop app
+        env:
+          CARGO_TARGET_DIR: ${{ github.ref_type != 'tag' && format('{0}/desktop-target', runner.temp) || '' }}
+        run: python3 release/build_desktop.py --platform linux --version "${{ needs.meta.outputs.version }}" --out out/desktop-linux --work "$RUNNER_TEMP/desktop-work"
+      # Keyed by the lock file, saved once: a key per commit added a ~420 MB entry per commit
+      # (6.7 GB of the 10 GB repo limit), and past 10 GB GitHub evicts the oldest entries.
+      - name: Save compiled crates (dry runs only)
+        if: success() && github.ref_type != 'tag' && steps.cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ runner.temp }}/desktop-target
+          key: cargo-linux-${{ env.RUST_VERSION }}-${{ hashFiles('desktop/Cargo.lock') }}
+      - name: Record the build's digests
+        id: digests
+        shell: bash
+        run: python3 release/digests.py record out/desktop-linux desktop_linux
+      - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/desktop-linux
+          key: ${{ steps.digests.outputs.desktop_linux_key }}
+          enableCrossOsArchive: true
+
+  desktop-windows:
+    if: needs.meta.outputs.promote_run == ''
+    needs: meta
+    outputs:
+      digests: ${{ steps.digests.outputs.desktop_windows }}
+      key: ${{ steps.digests.outputs.desktop_windows_key }}
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Toolchain
+        run: |
+          rustup toolchain install $env:RUST_VERSION --profile minimal
+          rustup default $env:RUST_VERSION
+      # Compiled crates kept between dry runs (keyed by the lock file); cargo
+      # rebuilds whatever its fingerprints say changed. A tag builds cold.
+      - name: Restore compiled crates (dry runs only)
+        id: cargo-cache
+        if: github.ref_type != 'tag'
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            ${{ runner.temp }}\desktop-target
+          key: cargo-windows-${{ env.RUST_VERSION }}-${{ hashFiles('desktop/Cargo.lock') }}
+          restore-keys: cargo-windows-${{ env.RUST_VERSION }}-${{ hashFiles('desktop/Cargo.lock') }}-
+      - name: Desktop app
+        env:
+          CARGO_TARGET_DIR: ${{ github.ref_type != 'tag' && format('{0}\desktop-target', runner.temp) || '' }}
+        run: python release/build_desktop.py --platform windows --version "${{ needs.meta.outputs.version }}" --out out/desktop-windows --work "$env:RUNNER_TEMP\desktop-work"
+      # Keyed by the lock file, saved once: a key per commit added a ~420 MB entry per commit
+      # (6.7 GB of the 10 GB repo limit), and past 10 GB GitHub evicts the oldest entries.
+      - name: Save compiled crates (dry runs only)
+        if: success() && github.ref_type != 'tag' && steps.cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            ${{ runner.temp }}\desktop-target
+          key: cargo-windows-${{ env.RUST_VERSION }}-${{ hashFiles('desktop/Cargo.lock') }}
+      - name: Record the build's digests
+        id: digests
+        shell: bash
+        run: python release/digests.py record out/desktop-windows desktop_windows
+      - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/desktop-windows
+          key: ${{ steps.digests.outputs.desktop_windows_key }}
+          enableCrossOsArchive: true
+
+  # The Windows edition: the same code compiled natively on Windows, with its
+  # PowerShell payloads compiled in (release/build_windows.py). Built in a
+  # neutral folder: the content gate refuses runner home and workspace paths.
+  engine-windows:
+    if: needs.meta.outputs.promote_run == ''
+    needs: meta
+    outputs:
+      digests: ${{ steps.digests.outputs.engine_windows }}
+      key: ${{ steps.digests.outputs.engine_windows_key }}
+    runs-on: windows-2025
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Build tools (pinned by hash)
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes -r release/build-tools.txt
+          python -m pip install --disable-pip-version-check --require-hashes --no-build-isolation -r release/requirements-build.txt
+      # Nuitka's built-in clcache keeps MSVC object files keyed by compiler,
+      # flags and source, so a stale entry can only miss, never change code.
+      # Persisted across dry runs (measured elsewhere: 17.4 -> 6.0 min warm);
+      # tagged releases build cold. Reset above 2 GiB: clcache never prunes.
+      - name: Restore the compiler cache (dry runs only)
+        if: github.ref_type != 'tag'
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: C:\nuitka-cache
+          key: nuitka-windows-${{ github.sha }}
+          restore-keys: nuitka-windows-
+      - name: Keep the compiler cache bounded
+        if: github.ref_type != 'tag'
+        run: |
+          if (Test-Path C:\nuitka-cache) {
+            $size = (Get-ChildItem C:\nuitka-cache -Recurse -File | Measure-Object Length -Sum).Sum
+            Write-Host ("compiler cache: {0:N0} MB" -f ($size / 1MB))
+            if ($size -gt 2GB) { Remove-Item C:\nuitka-cache -Recurse -Force; Write-Host "over 2 GiB: reset" }
+          }
+      # Nuitka's tips: real-time scanning of the build folders slows MSVC builds.
+      # A disposable runner; only these two build folders are excluded.
+      - name: Keep Defender out of the build folders
+        run: |
+          $mp = Get-MpComputerStatus -ErrorAction SilentlyContinue
+          Write-Host "Defender real-time protection: $(if ($mp) { $mp.RealTimeProtectionEnabled } else { 'not present' })"
+          if ($mp -and $mp.RealTimeProtectionEnabled) {
+            Add-MpPreference -ExclusionPath C:\argus-build, C:\nuitka-cache, $env:RUNNER_TEMP
+          }
+      - name: Native Windows engine
+        env:
+          NUITKA_CACHE_DIR: ${{ github.ref_type == 'tag' && format('{0}\nuitka-cold', runner.temp) || 'C:\nuitka-cache' }}
+        run: python release/build_windows.py --version "${{ needs.meta.outputs.version }}" --out out/engine-windows --work C:\argus-build --jobs 4
+      - name: Save the compiler cache (dry runs only, after a successful build)
+        if: success() && github.ref_type != 'tag'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: C:\nuitka-cache
+          key: nuitka-windows-${{ github.sha }}
+      - name: Record the build's digests
+        id: digests
+        shell: bash
+        run: python release/digests.py record out/engine-windows engine_windows
+      - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/engine-windows
+          key: ${{ steps.digests.outputs.engine_windows_key }}
+          enableCrossOsArchive: true
+
+  # The service path from source on a clean Windows host, in minutes: a start-up
+  # crash or a refused pairing fails the run long before the compiled build is
+  # tested (install_test.ps1 still tests the compiled program).
+  windows-source-smoke:
+    needs: meta
+    if: needs.meta.outputs.promote_run == ''
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: py
+        with:
+          python-version: "3.12"
+      - name: Runtime dependencies (pinned by hash)
+        run: python -m pip install --disable-pip-version-check --require-hashes -r release/requirements-runtime.txt
+      - name: Install, run, pair, remove (from source)
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File release/windows/source_smoke.ps1 -Python "${{ steps.py.outputs.python-path }}"
+
+  windows-setup:
+    if: needs.meta.outputs.promote_run == ''
+    needs: [meta, engine-windows, desktop-windows]
+    outputs:
+      digests: ${{ steps.digests.outputs.windows_setup }}
+      key: ${{ steps.digests.outputs.windows_setup_key }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/engine-windows
+          key: ${{ needs.engine-windows.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/desktop-windows
+          key: ${{ needs.desktop-windows.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - name: Both inputs are exactly what their builds recorded
+        env:
+          ENGINE: ${{ needs.engine-windows.outputs.digests }}
+          DESKTOP: ${{ needs.desktop-windows.outputs.digests }}
+        run: |
+          python3 release/digests.py verify out/engine-windows "$ENGINE"
+          python3 release/digests.py verify out/desktop-windows "$DESKTOP"
+      - name: makensis and 7-Zip (the gate opens the Setup with 7z)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q nsis 7zip
+      - run: python3 release/build_setup.py --engine out/engine-windows --desktop out/desktop-windows --version "${{ needs.meta.outputs.version }}" --out out/windows-setup
+      - name: Record the build's digests
+        id: digests
+        run: python3 release/digests.py record out/windows-setup windows_setup
+      - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/windows-setup
+          key: ${{ steps.digests.outputs.windows_setup_key }}
+          enableCrossOsArchive: true
+
+  windows-install-test:
+    needs: [meta, windows-setup]
+    if: needs.meta.outputs.promote_run == ''
+    runs-on: windows-2025
+    # One clean Windows host per scenario (install_test.ps1 -Scenario). On one host the
+    # scenarios ran in a fixed order because they share the supervisor's restart budget (3
+    # restarts per 15 minutes), with up to 16 minutes of waiting between them; a fresh host has
+    # the whole budget. Every real wait inside a scenario stays: the 5-minute repeating trigger,
+    # the 75-second pause check, the restart-budget kills. All legs must pass: draft needs this job.
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [supervisor, pause, app-open, budget, lifecycle]
+    name: windows-install-test (${{ matrix.scenario }})
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/windows-setup
+          key: ${{ needs.windows-setup.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - name: The Setup is the one its build recorded
+        shell: bash
+        env:
+          DIGESTS: ${{ needs.windows-setup.outputs.digests }}
+        run: python release/digests.py verify out/windows-setup "$DIGESTS"
+      - name: Install, run, observe (a clean Windows host without WSL)
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File release/windows/install_test.ps1 -Setup out/windows-setup/ARGUS-INSTINCT-Setup-windows-x64.exe -Scenario ${{ matrix.scenario }}
+
+  draft:
+    if: needs.meta.outputs.promote_run == ''
+    needs: [meta, verify, windows-source-smoke, server, server-install-test, desktop-linux, desktop-windows, engine-windows, windows-setup, windows-install-test]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write   # only this job, only to create the draft release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/server
+          key: ${{ needs.server.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/desktop-linux
+          key: ${{ needs.desktop-linux.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/desktop-windows
+          key: ${{ needs.desktop-windows.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/engine-windows
+          key: ${{ needs.engine-windows.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: out/windows-setup
+          key: ${{ needs.windows-setup.outputs.key }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
+      - name: Every file is exactly what its build recorded
+        env:
+          SERVER: ${{ needs.server.outputs.digests }}
+          LINUX: ${{ needs.desktop-linux.outputs.digests }}
+          WINDOWS: ${{ needs.desktop-windows.outputs.digests }}
+          ENGINE: ${{ needs.engine-windows.outputs.digests }}
+          SETUP: ${{ needs.windows-setup.outputs.digests }}
+        run: |
+          python3 release/digests.py verify out/server "$SERVER"
+          python3 release/digests.py verify out/desktop-linux "$LINUX"
+          python3 release/digests.py verify out/desktop-windows "$WINDOWS"
+          python3 release/digests.py verify out/engine-windows "$ENGINE"
+          python3 release/digests.py verify out/windows-setup "$SETUP"
+      - name: 7-Zip (the gate opens the Windows Setup with 7z)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q 7zip
+      - name: Assemble and gate
+        run: |
+          python3 release/assemble.py --builds out --out release-out \
+            --version "${{ needs.meta.outputs.version }}" --tag "$GITHUB_REF_NAME" --commit "$GITHUB_SHA" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --previous https://www.archymedes.xyz/downloads/argus/manifest.json
+          cat release-out/release-report.md >> "$GITHUB_STEP_SUMMARY"
+      # Owner decision 2026-11-03: a dry run hands its assembled, gated release
+      # folder to the owner as a private seven-day workflow artifact, so it can be
+      # published straight to the site without the tag/sign/publish flow.
+      - name: Hand the assembled release to the owner (dry runs only)
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-out
+          path: release-out/
+          retention-days: 7
+          if-no-files-found: error
+      # Each build's record (version, commit, digests; a few kilobytes) so that a tag on this
+      # commit can promote this run instead of rebuilding it (release/promote.py).
+      - name: Keep the build records for promotion (dry runs only)
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: build-records
+          path: out/**/*-build.json
+          retention-days: 7
+          if-no-files-found: error
+      - name: Draft release (unsigned, unpublished)
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
+            --title "Argus ${{ needs.meta.outputs.version }}" --notes-file release-out/release-report.md \
+            release-out/*
+          echo "Draft ready. A releaser signs it: python3 release/sign.py $GITHUB_REF_NAME" >> "$GITHUB_STEP_SUMMARY"
+
+  # A tag on the commit of a successful dry run: the dry run's files and records are re-checked
+  # (two independent copies of every digest), then assembled and gated again under the tag's name.
+  # The report names the dry run as the builder. Still an unsigned draft; a releaser signs it.
+  promote:
+    needs: [meta, verify]
+    if: needs.meta.outputs.promote_run != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write   # only to create the draft release
+      actions: read     # to download the dry run's artifacts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: The dry run's files and build records
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ needs.meta.outputs.promote_run }}
+        run: |
+          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n release-out -D dry/release-out
+          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n build-records -D dry/records
+      - name: Every file is what its build recorded and what the dry run gated
+        run: python3 release/promote.py stage --release-out dry/release-out --records dry/records --out builds --sha "$GITHUB_SHA" --version "${{ needs.meta.outputs.version }}"
+      - name: 7-Zip (the gate opens the Windows Setup with 7z)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q 7zip
+      - name: Assemble and gate again, under the tag's name
+        run: |
+          python3 release/assemble.py --builds builds --out release-out \
+            --version "${{ needs.meta.outputs.version }}" --tag "$GITHUB_REF_NAME" --commit "$GITHUB_SHA" \
+            --run-url "${{ needs.meta.outputs.promote_url }}" \
+            --previous https://www.archymedes.xyz/downloads/argus/manifest.json
+          cat release-out/release-report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Draft release (unsigned, unpublished)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
+            --title "Argus ${{ needs.meta.outputs.version }}" --notes-file release-out/release-report.md \
+            release-out/*
+          echo "Promoted from dry run ${{ needs.meta.outputs.promote_url }}: not rebuilt. A releaser signs it: python3 release/sign.py $GITHUB_REF_NAME" >> "$GITHUB_STEP_SUMMARY"

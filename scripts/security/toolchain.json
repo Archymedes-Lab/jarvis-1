@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "checked": "2026-11-09",
+  "gitleaks": {
+    "version": "8.30.1",
+    "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz",
+    "sha256": "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+  },
+  "cargo-audit": {
+    "version": "0.22.2",
+    "url": "https://static.crates.io/crates/cargo-audit/cargo-audit-0.22.2.crate",
+    "sha256": "700c2b240f7fd330c24b675fe429f73a5b676531fcc6300400b2b67f155ba12a"
+  }
+}

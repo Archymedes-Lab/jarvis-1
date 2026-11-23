@@ -1,0 +1,35 @@
+# Fire the out-of-daemon watchdog every two minutes, forever.
+#
+# Two minutes is chosen against STALE_AFTER (300s) in selfcheck.py: a wedged or
+# dead daemon is detected on the first tick after it crosses five minutes of
+# silence, so the worst case between "jarvis stopped monitoring" and "an email
+# about it" is about seven minutes — and the restart is attempted immediately,
+# so in the common case the gap in coverage is under a minute.
+
+[Unit]
+Description=Run the ARGUS-INSTINCT self-check every two minutes
+
+[Timer]
+# A wall-clock schedule, deliberately NOT OnUnitInactiveSec=.
+#
+# OnUnitInactiveSec chains each run off the previous one's completion, so it
+# only keeps firing while that chain is unbroken. Disabling and re-enabling the
+# timer clears the service's InactiveEnterTimestamp, and the timer then sits
+# there ActiveState=active with NextElapseUSecMonotonic=infinity -- armed,
+# enabled, and never going to fire again. OnBootSec/OnStartupSec do not save it
+# either: they are monotonic offsets that elapsed once, hours ago.
+#
+# That is the worst failure available to a watchdog, because every status
+# command reports it healthy. A calendar expression always has a next elapse,
+# whatever happened before it.
+OnCalendar=*:0/2
+# Also check promptly after a boot rather than waiting for the next even minute.
+OnBootSec=1min
+AccuracySec=5s
+# Run a missed tick as soon as we are back, rather than skipping it silently --
+# this is what covers a WSL shutdown or a suspended machine.
+Persistent=true
+Unit=jarvis-selfcheck.service
+
+[Install]
+WantedBy=timers.target

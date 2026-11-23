@@ -1,0 +1,196 @@
+#!/usr/bin/python3 -I
+"""Root-owned restart gate for jarvis.service. Never imports the user checkout.
+
+Installed as /usr/local/sbin/jarvis-restart-gate by install-restart-gate.sh,
+it is the only passwordless way to restart the monitor. A restart is a
+warrant, not a command:
+
+  1. the caller states who it is and why (fixed enumerations only);
+  2. the gate checks that fault itself, as root, before acting: a restart
+     for "unit-down" is refused while systemd says the unit is running; one
+     for "health-silent" is refused while the daemon answers its loopback
+     health endpoint and reports itself live (slow is not dead);
+  3. it is rate-limited (MAX_PER_HOUR automatic restarts);
+  4. the decision, the caller's lineage (image names) and the systemd
+     InvocationID of the instance it stops are appended to a root-owned log
+     BEFORE acting, so the restart autopsy (collectors/host/restarts.py)
+     links every gate restart to the exact stop, and nothing the desktop
+     user can write can impersonate a gate record.
+
+Exit codes: 0 restarted, 2 usage, 3 refused (no fault), 4 rate-limited,
+1 failure.
+"""
+import json
+import os
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+
+UNIT = "jarvis.service"
+LOG = "/var/log/jarvis-restart-gate.jsonl"
+STATE_DIR = "/var/lib/jarvis-restart-gate"
+HEALTH_URL = "http://127.0.0.1:8787/api/health"
+HEALTH_TIMEOUT_S = 15
+HEALTH_RETRY_GAP_S = 10
+MAX_PER_HOUR = 3
+ACTORS = ("reviver", "wake-watchdog", "selfcheck", "quickstart", "owner")
+REASONS = ("unit-down", "health-silent", "owner")
+HEALTHY = ("active", "activating", "reloading")
+ENV = {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LANG": "C.UTF-8"}
+MAX_LINEAGE = 6
+
+
+def run(args, timeout=30):
+    try:
+        r = subprocess.run(args, capture_output=True, text=True, timeout=timeout, cwd="/", env=ENV)
+        return r.returncode, r.stdout.strip()
+    except (OSError, subprocess.SubprocessError) as exc:
+        return 1, type(exc).__name__
+
+
+def unit_state():
+    _code, out = run(["/usr/bin/systemctl", "is-active", UNIT], 10)
+    return out.splitlines()[-1].strip() if out else ""
+
+
+def invocation():
+    _code, out = run(["/usr/bin/systemctl", "show", UNIT, "-p", "InvocationID", "--value"], 10)
+    return out if len(out) == 32 and all(c in "0123456789abcdef" for c in out) else ""
+
+
+MAX_HEALTH_BYTES = 4 * 1024 * 1024
+
+
+def is_alive(url=HEALTH_URL, timeout=HEALTH_TIMEOUT_S):
+    """True when the daemon answers its health endpoint AND reports itself live.
+
+    A degraded daemon answers 503 with live true: slow is not dead, and a
+    restart blinds it without curing load. Answering with live false (its
+    protection lanes stopped progressing) or not answering is not alive."""
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as resp:
+            body = resp.read(MAX_HEALTH_BYTES)
+    except urllib.error.HTTPError as exc:
+        try:
+            body = exc.read(MAX_HEALTH_BYTES)
+        except OSError:
+            return False
+    except (OSError, ValueError):
+        return False
+    try:
+        h = json.loads(body)
+    except ValueError:
+        return False
+    return isinstance(h, dict) and h.get("service") == "JARVIS" and h.get("live") is True
+
+
+def lineage(pid=None):
+    """Image names of the caller's process ancestry, read from /proc (root)."""
+    out, pid = [], os.getppid() if pid is None else pid
+    for _ in range(MAX_LINEAGE):
+        try:
+            with open(f"/proc/{pid}/stat", encoding="utf-8", errors="replace") as fh:
+                stat = fh.read()
+            name = stat[stat.index("(") + 1:stat.rindex(")")]
+            ppid = int(stat[stat.rindex(")") + 2:].split()[1])
+        except (OSError, ValueError, IndexError):
+            break
+        out.append(name[:32])
+        if ppid <= 1:
+            break
+        pid = ppid
+    return out
+
+
+def recent_allowed(now, log=LOG):
+    """Automatic restarts the gate allowed in the last hour."""
+    n = 0
+    try:
+        with open(log, encoding="utf-8", errors="replace") as fh:
+            for line in fh.readlines()[-500:]:
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    continue
+                if (rec.get("decision") == "allowed" and rec.get("actor") != "owner"
+                        and now - float(rec.get("ts", 0)) < 3600):
+                    n += 1
+    except OSError:
+        pass
+    return n
+
+
+def record(rec, log=LOG):
+    """Append one decision durably before acting. Failure to record is refusal."""
+    fd = os.open(log, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        os.write(fd, (json.dumps(rec, sort_keys=True) + "\n").encode())
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def decide(actor, reason, state, healthy_probe, allowed_last_hour, interactive):
+    """(decision, why). Pure: every input is passed in."""
+    if actor == "owner" or reason == "owner":
+        if not (actor == "owner" and reason == "owner" and interactive):
+            return "refused", "an owner restart must be run by a person at a terminal"
+        return "allowed", "owner at a terminal"
+    if allowed_last_hour >= MAX_PER_HOUR:
+        return "rate-limited", f"{allowed_last_hour} automatic restarts in the last hour"
+    if reason == "unit-down":
+        if state in HEALTHY:
+            return "refused", f"systemd says the unit is {state}"
+        return "allowed", f"systemd says the unit is {state or 'unreadable'}"
+    if reason == "health-silent":
+        if state not in HEALTHY:
+            return "allowed", f"systemd says the unit is {state or 'unreadable'}"
+        if healthy_probe():
+            return "refused", "the daemon answers its health endpoint and reports itself live"
+        return "allowed", "running but not live on its health endpoint, twice"
+    return "refused", "unknown reason"
+
+
+def main(argv):
+    args = dict(zip(argv[1::2], argv[2::2])) if len(argv) == 5 else {}
+    actor, reason = args.get("--actor", ""), args.get("--reason", "")
+    if set(args) != {"--actor", "--reason"} or actor not in ACTORS or reason not in REASONS:
+        print(f"usage: jarvis-restart-gate --actor {{{','.join(ACTORS)}}} --reason {{{','.join(REASONS)}}}",
+              file=sys.stderr)
+        return 2
+    if os.geteuid() != 0:
+        print("jarvis-restart-gate must run as root (through its sudo rule)", file=sys.stderr)
+        return 1
+    os.makedirs(STATE_DIR, mode=0o700, exist_ok=True)
+    now = time.time()
+    state = unit_state()
+
+    def probe():
+        if is_alive():
+            return True
+        time.sleep(HEALTH_RETRY_GAP_S)
+        return is_alive()
+
+    decision, why = decide(actor, reason, state, probe, recent_allowed(now), os.isatty(0))
+    rec = {"ts": now, "actor": actor, "reason": reason, "decision": decision, "why": why,
+           "unit_state": state, "invocation": invocation(), "caller_uid": os.environ.get("SUDO_UID", ""),
+           "lineage": lineage()}
+    try:
+        record(rec)
+    except OSError as exc:
+        print(f"refused: the decision could not be recorded ({type(exc).__name__})", file=sys.stderr)
+        return 1
+    if decision != "allowed":
+        print(f"{decision}: {why}")
+        return 3 if decision == "refused" else 4
+    code, out = run(["/usr/bin/systemctl", "restart", UNIT], 120)
+    record({"ts": time.time(), "actor": actor, "decision": "result", "invocation": rec["invocation"],
+            "restart_code": code, "unit_state": unit_state()})
+    print(f"restarted ({why})" if code == 0 else f"restart failed: {out[-200:]}")
+    return 0 if code == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

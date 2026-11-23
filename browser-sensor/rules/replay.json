@@ -1,0 +1,50 @@
+[
+ {
+  "id": 1,
+  "priority": 1,
+  "action": {
+   "type": "block"
+  },
+  "condition": {
+   "requestDomains": [
+    "clarity.ms",
+    "contentsquare.com",
+    "contentsquare.net",
+    "crazyegg.com",
+    "decibelinsight.net",
+    "fullstory.com",
+    "glassboxcdn.com",
+    "glassboxdigital.io",
+    "hotjar.com",
+    "hotjar.io",
+    "inspectlet.com",
+    "logr-ingest.com",
+    "lr-in-prod.com",
+    "lr-in.com",
+    "lr-ingest.com",
+    "lr-ingest.io",
+    "luckyorange.com",
+    "luckyorange.net",
+    "mc.yandex.com",
+    "mc.yandex.ru",
+    "mouseflow.com",
+    "openreplay.com",
+    "quantummetric.com",
+    "sessioncam.com",
+    "smartlook.cloud",
+    "smartlook.com"
+   ],
+   "resourceTypes": [
+    "script",
+    "xmlhttprequest",
+    "ping",
+    "image",
+    "websocket",
+    "media",
+    "font",
+    "stylesheet",
+    "other"
+   ]
+  }
+ }
+]

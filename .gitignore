@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv/
+venv/
+*.db
+*.sqlite
+*.sqlite3
+.DS_Store
+*.log
+
+# stray agent checkpoint store, not project source
+.archymedes/
+
+# Local peer identities, encryption/TLS keys and experimental evidence stores.
+.peer-mesh-local/
+hosted/mesh-cloudflare/node_modules/
+hosted/mesh-cloudflare/.wrangler/
+hosted/mesh-cloudflare/.build/
+hosted/mesh-cloudflare/.dev.vars
+
+# Rust build output
+rust-runtime/target/
+jarvis/core/_payloads.py

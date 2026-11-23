@@ -1,0 +1,116 @@
+SAMPLE REPORT. The server, findings and dates below are invented to show the format of a real review; none of them was observed on any machine.
+
+ARGUS-1 observed server review: sample-web-01 (fictional)
+Window: 2026-10-26 00:00 UTC to 2026-11-02 00:00 UTC (7 days)
+
+This is an observed review of what ARGUS-1 recorded on this server. It is not a security audit, a penetration test or a certification, and it does not say that this server is or is not compromised.
+
+None of the 71 capabilities in the coverage register has been live-tested yet.
+
+Capability status: built and tested in source only; not yet verified on a real machine for every area below unless noted.
+Areas: 12 observed, 1 partial, 1 stale, 1 not observed.
+Findings from areas observed in this window: 0 critical, 6 high, 5 medium, 4 low.
+Findings are operational observations to review with the server owner, not verdicts.
+
+## SSH configuration, authorised keys and tunnels [sshwatch]
+   State: observed in this window. Runs in window: 2016 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:57 UTC.
+   - high     new ssh key for deploy
+              a key was added to /home/deploy/.ssh/authorized_keys on 2026-10-29; confirm who added it
+   - medium   PasswordAuthentication is enabled
+              sshd accepts passwords; keys only is the usual choice for a web server
+   - low      PermitRootLogin prohibit-password
+              root may log in with a key
+
+## Successful SSH logins from new networks or keys [logins]
+   State: observed in this window. Runs in window: 2016 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:57 UTC.
+   - medium   login for deploy from a network not seen before
+              first login from this network in the window, using the key added on 2026-10-29
+
+## Firewall and exposed services [firewall]
+   State: observed in this window. Runs in window: 168 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:30 UTC.
+   - high     MySQL (3306) listens on all addresses
+              mysqld is bound to 0.0.0.0 and no firewall rule limits it
+   - low      no host firewall rules are loaded
+
+## Inbound packet headers (no payloads) [netflow]
+   State: not observed in this window. Runs in window: 0 complete, 0 partial, 0 unavailable. Last run: none recorded.
+   Nothing can be said about this area for this window.
+
+## Failed services, expiring certificates, OOM kills [opshealth]
+   State: observed in this window. Runs in window: 2016 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:57 UTC.
+   - high     certificate for shop.example expires in 9 days
+              certbot.timer is inactive, so it will not renew on its own
+   - medium   php8.3-fpm was killed by the OOM killer 3 times
+              last at 2026-10-31 02:14 UTC, during the backup window
+   - low      failed unit: logrotate.service
+
+## Boot chain and kernel images [bootchain]
+   State: no run in this window; last findings are older and shown for reference only. Runs in window: 0 complete, 0 partial, 0 unavailable. Last run: no run in this window (stored result from 2026-10-21 00:00 UTC).
+   No findings in the stored result of 2026-10-21 00:00 UTC.
+
+## Processes reading the keyboard [keyreaders]
+   State: observed in this window. Runs in window: 2016 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:57 UTC.
+   No findings in the stored result of 2026-11-01 23:57 UTC.
+
+## Integrity of commonly replaced packages [pkgverify]
+   State: observed in this window. Runs in window: 7 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 12:00 UTC.
+   No findings in the stored result of 2026-11-01 12:00 UTC.
+
+## Pending security updates and known CVEs [patches]
+   State: observed in this window. Runs in window: 7 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 12:00 UTC.
+   - high     14 security updates pending, 1 on the CISA KEV list
+              oldest pending for 23 days; a reboot is also pending for a new kernel
+
+## Pending security updates and known CVEs [distrovuln]
+   State: observed in this window. Runs in window: 7 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 12:00 UTC.
+   - medium   3 known CVEs in installed packages have a fix available
+
+## Vulnerable dependencies and secrets in codebases [appcode]
+   State: observed in this window. Runs in window: 7 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 12:00 UTC.
+   - high     credential in /srv/shop/.env
+              detail withheld from this report: it may contain a secret; see it on the server itself
+   - high     lodash 4.17.15 in /srv/shop (prototype pollution)
+              fixed in 4.17.21
+   - medium   /srv/shop/.env is world-readable
+
+## Vulnerable dependencies and secrets in codebases [osv]
+   State: observed in this window. Runs in window: 7 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 12:00 UTC.
+   No findings in the stored result of 2026-11-01 12:00 UTC.
+
+## Docker privilege and published ports [containers]
+   State: observed in this window. Runs in window: 2016 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:57 UTC.
+   No findings in the stored result of 2026-11-01 23:57 UTC.
+
+## Changes to ARGUS-INSTINCT itself [selfguard]
+   State: observed in this window. Runs in window: 2016 complete, 0 partial, 0 unavailable. Last run: 2026-11-01 23:57 UTC.
+   No findings in the stored result of 2026-11-01 23:57 UTC.
+
+## Off-box "host went silent" heartbeat [heartbeat]
+   State: ran in this window, but no run was complete. Runs in window: 0 complete, 1840 partial, 176 unavailable. Last run: 2026-11-01 23:57 UTC.
+   - low      no off-box heartbeat: nothing outside this machine notices if it goes silent
+              set a heartbeat URL to a dead-man service to be told when this server stops
+
+What this review could not see (blind spots):
+  - SSH configuration, authorised keys and tunnels: built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server.
+  - Successful SSH logins from new networks or keys: built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server.
+  - Firewall and exposed services: built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server.
+  - Inbound packet headers (no payloads): built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server or against real internet background traffic, so every threshold is a starting value.
+  - Failed services, expiring certificates, OOM kills: built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server.
+  - Boot chain and kernel images: built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server.
+  - Processes reading the keyboard: built and tested in source only; not yet verified on a real machine. Limit: Never run on a real server or desktop.
+  - Integrity of commonly replaced packages: built and tested in source only; not yet verified on a real machine. Limit: Never run on an RPM system.
+  - Pending security updates and known CVEs: built and tested in source only; not yet verified on a real machine. Limit: Measured on this WSL Ubuntu 24.04 only.
+  - Vulnerable dependencies and secrets in codebases: built and tested in source only; not yet verified on a real machine. Limit: Not yet run on a real server.
+  - Docker privilege and published ports: built and tested in source only; not yet verified on a real machine. Limit: No isolated malicious-container measurement, scheduled service receipt or sustained coverage proof.
+  - Changes to ARGUS-INSTINCT itself: built and tested in source only; not yet verified on a real machine. Limit: Not soaked.
+  - Off-box "host went silent" heartbeat: built and tested in source only; not yet verified on a real machine. Limit: No delivery to a real dead-man service has been measured.
+  - Alert delivery (email, webhook, ntfy, syslog): built and tested in source only; not yet verified on a real machine. Limit: No live delivery to a real webhook or ntfy topic has been measured.
+  - Alert delivery (email, webhook, ntfy, syslog): no collector run is recorded for it in this report.
+
+Health and assurance scores describe what ARGUS-INSTINCT can observe and how much evidence supports it. Neither is a verdict that this machine is or is not compromised, and an absence of alerts is not proof of safety.
+
+Good to know:
+  - The off-box heartbeat is off until you set a heartbeat URL; until then nobody is told if this server goes silent.
+  - Alerts go only to channels you configure or to a phone you pair.
+
+To remove ARGUS-1: .deb: sudo apt remove argus-server; tarball install: sudo /opt/argus/uninstall.sh. Removal on a clean machine has not been validated yet.

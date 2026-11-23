@@ -1,0 +1,8 @@
+[Unit]
+Description=Argus release audit: what www.archymedes.xyz serves passes the content gate and is signed
+Documentation=file://%h/jarvis/docs/guides/RELEASING.md
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I %h/jarvis/release/audit.py --alert
+Nice=10

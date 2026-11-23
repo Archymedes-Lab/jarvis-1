@@ -1,0 +1,32 @@
+{
+  "name": "jarvis-evidence-witness",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "account_id": "403e1436a8490c86a5c1ba912180c032",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {
+    "enabled": false
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "EVIDENCE",
+        "class_name": "EvidenceLedger"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1-sqlite",
+      "new_sqlite_classes": [
+        "EvidenceLedger"
+      ]
+    }
+  ],
+  "vars": {
+    "ALLOWED_PRODUCERS": "1d957fd50d57720ff78308aff97e5c712d94e4ad426038a6acb3449355c38d5d",
+    "WITNESS_PUBLIC": "be4a3d75c8c888e4a66831b2377308268c908d76a31e42320188c0c8fb142cc8",
+    "MAX_STORE_BYTES": "268435456"
+  }
+}

@@ -1,0 +1,170 @@
+name: CI
+
+# Every push: the static gate (ruff, mypy, property checks and model checking),
+# the full unit suite, the release tooling's own tests and the desktop interface
+# tests. A release tag runs these again before any build (release.yml), so
+# nothing ships that CI has not passed.
+#
+# Main-targeting PRs also run all required checks on the merge result, including
+# external forks. Keep read-only permissions, hosted runners and no secrets.
+# Both events preserve ASES's every-push gate. Internal PRs can duplicate branch
+# runs; timeouts and revision cancellation bound cost. Budget exhaustion still
+# blocks merges and never bypasses a check. Never skip required PR jobs merely
+# because a separate branch run exists: skipped success can mask a failure.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Runtime dependencies (pinned by hash)
+        run: python -m pip install --disable-pip-version-check --require-hashes -r release/requirements-runtime.txt
+      - name: Static gate
+        run: scripts/dev/static_gate.sh
+      - name: Archymedes Security Engineering Standard (docs/security/ARCHYMEDES-SECURITY-STANDARD.md)
+        run: python scripts/dev/standard_check.py
+      - name: Release tooling (content gate, signatures, launcher)
+        run: python -m unittest tests.test_release_gate tests.test_release_signing tests.test_release_keys tests.test_release_version tests.test_host_attest tests.test_release_digests tests.test_standard_check tests.test_server_launcher -v
+      - name: Development-only YAML parser (pinned by hash; the rule compiler tests and the benchmark use it)
+        run: python -m pip install --disable-pip-version-check --require-hashes -r scripts/security/requirements-bench.txt
+      - name: Unit suite
+        run: python scripts/dev/ci_suite.py
+      # Atomic Red Team's test index (MIT), fetched as data at a pinned commit and checked by
+      # hash. Its commands are replayed as text through the real detectors; nothing runs.
+      # The job fails if fewer tests are caught than scripts/security/atomic_floor.json records.
+      - name: Detection benchmark (must not fall below the floor)
+        run: |
+          curl -fsSL --max-time 120 -o "$RUNNER_TEMP/atomic-index.yaml" \
+            https://raw.githubusercontent.com/redcanaryco/atomic-red-team/a0e3f9bc69fed2fd711bd1f1aa87a40c33482fe6/atomics/Indexes/index.yaml
+          echo "afa92a2c9b95b77d6ff0a318ae8000d9df04fc63101f87a7ac9fc6feb1fdf6f6  $RUNNER_TEMP/atomic-index.yaml" | sha256sum -c -
+          python -m scripts.security.atomic_bench "$RUNNER_TEMP/atomic-index.yaml" --floor scripts/security/atomic_floor.json
+
+  desktop-ui:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+      - name: Interface tests and build
+        working-directory: desktop/ui
+        run: |
+          bun install --frozen-lockfile
+          bun run test
+          bun run build
+
+  # The desktop app's own logic (pairing, engine lifecycle, provisioning) has
+  # unit tests in Rust; the release builds compile the app but do not run them.
+  desktop-rust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+      - name: Toolchain and WebKitGTK
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+          rustup toolchain install 1.97.1 --profile minimal
+          rustup default 1.97.1
+      # Restored on every branch, saved only from main: the combined cache action saved a
+      # 640 MB copy per branch (a cache is scoped to its branch, and a branch may restore main's).
+      - name: Restore compiled crates
+        id: cargo-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/target
+          key: cargo-test-${{ hashFiles('desktop/Cargo.lock') }}
+      - name: Interface build (the app embeds it)
+        working-directory: desktop/ui
+        run: bun install --frozen-lockfile && bun run build
+      - name: Unit tests
+        working-directory: desktop
+        run: cargo test --locked
+      - name: Save compiled crates (main only)
+        if: success() && github.ref == 'refs/heads/main' && steps.cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            desktop/target
+          key: cargo-test-${{ hashFiles('desktop/Cargo.lock') }}
+
+  # Opt-in native proof without rebuilding the server/engine or weakening a
+  # developer machine's Defender policy. Ordinary pushes do not start Windows.
+  desktop-rust-windows:
+    if: startsWith(github.ref, 'refs/heads/test/windows-native/')
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Toolchain
+        run: |
+          rustup toolchain install 1.97.1 --profile minimal
+          rustup default 1.97.1
+      - name: Restore compiled crates
+        id: windows-cargo-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            ${{ runner.temp }}\desktop-target
+          key: cargo-windows-tests-1.97.1-${{ hashFiles('desktop/Cargo.lock') }}
+          restore-keys: cargo-windows-1.97.1-${{ hashFiles('desktop/Cargo.lock') }}
+      - name: Build and run the native release test harness
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}\desktop-target
+        run: |
+          $version = (Get-Date).ToUniversalTime().ToString('yyyy.MM.dd') + '-0'
+          python release/build_desktop.py --platform windows --version $version --out out/native-test-only --work "$env:RUNNER_TEMP\desktop-work"
+      - name: Save compiled crates (successful opt-in run only)
+        if: success() && steps.windows-cargo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            ${{ runner.temp }}\desktop-target
+          key: cargo-windows-tests-1.97.1-${{ hashFiles('desktop/Cargo.lock') }}

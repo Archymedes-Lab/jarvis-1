@@ -1,0 +1,371 @@
+{
+  "_comment": "Deny by default. Every published file must match exactly one artifact rule below, and every file inside it must match that rule's allow list. Changing this file changes what the public can download: it needs the same two-person review as a release.",
+  "_copyleft_comment": "Conservative dependency deny list retained for the noncommercial distribution. New dependencies require reviewed compatibility and notices. A project license change does not relicense dependencies or remove their source obligations.",
+  "deny_copyleft_names": ["libreadline.so*", "readline*.so", "libhistory.so*"],
+  "artifacts": [
+    {
+      "name": "argus-server-linux-x86_64.tar.gz",
+      "kind": "tar",
+      "allow": [
+        "argus-server/LICENSE.txt",
+        "argus-server/THIRD-PARTY-NOTICES.txt",
+        "argus-server/bin/argus-server",
+        "argus-server/bin/*.so",
+        "argus-server/bin/*.so.*",
+        "argus-server/bin/**/*.so",
+        "argus-server/bin/**/*.so.*",
+        "argus-server/bin/argus/web/static/**/*.html",
+        "argus-server/bin/argus/web/static/**/*.js",
+        "argus-server/bin/argus/web/static/**/*.css",
+        "argus-server/bin/argus/web/static/**/*.woff2",
+        "argus-server/bin/argus/web/static/**/*.txt",
+        "argus-server/bin/argus/web/static/**/*.png",
+        "argus-server/bin/argus/web/static/**/*.svg", "argus-server/bin/argus/web/static/vendor/world-50m.json",
+        "argus-server/bin/argus/web/styles/*.css",
+        "argus-server/bin/argus/intel/data/*.json",
+        "argus-server/bin/argus/lab/scenarios/*.json",
+        "argus-server/bin/systemd/*.conf",
+        "argus-server/bin/systemd/*.service",
+        "argus-server/bin/systemd/*.timer",
+        "argus-server/bin/sysmon/config.xml",
+        "argus-server/units/*.service",
+        "argus-server/units/*.timer",
+        "argus-server/install.sh",
+        "argus-server/uninstall.sh",
+        "argus-server/README.txt",
+        "argus-server/VERSION"
+      ],
+      "executables": [
+        "argus-server/bin/argus-server",
+        "argus-server/install.sh",
+        "argus-server/uninstall.sh"
+      ]
+    },
+    {
+      "name": "argus-server_*_amd64.deb",
+      "kind": "deb",
+      "allow": [
+        "usr/share/argus-server/LICENSE.txt",
+        "usr/share/argus-server/THIRD-PARTY-NOTICES.txt",
+        "usr/share/argus-server/bin/argus-server",
+        "usr/share/argus-server/bin/*.so",
+        "usr/share/argus-server/bin/*.so.*",
+        "usr/share/argus-server/bin/**/*.so",
+        "usr/share/argus-server/bin/**/*.so.*",
+        "usr/share/argus-server/bin/argus/web/static/**/*.html",
+        "usr/share/argus-server/bin/argus/web/static/**/*.js",
+        "usr/share/argus-server/bin/argus/web/static/**/*.css",
+        "usr/share/argus-server/bin/argus/web/static/**/*.woff2",
+        "usr/share/argus-server/bin/argus/web/static/**/*.txt",
+        "usr/share/argus-server/bin/argus/web/static/**/*.png",
+        "usr/share/argus-server/bin/argus/web/static/**/*.svg", "usr/share/argus-server/bin/argus/web/static/vendor/world-50m.json",
+        "usr/share/argus-server/bin/argus/web/styles/*.css",
+        "usr/share/argus-server/bin/argus/intel/data/*.json",
+        "usr/share/argus-server/bin/argus/lab/scenarios/*.json",
+        "usr/share/argus-server/bin/systemd/*.conf",
+        "usr/share/argus-server/bin/systemd/*.service",
+        "usr/share/argus-server/bin/systemd/*.timer",
+        "usr/share/argus-server/bin/sysmon/config.xml",
+        "usr/share/argus-server/units/*.service",
+        "usr/share/argus-server/units/*.timer",
+        "usr/share/argus-server/install.sh",
+        "usr/share/argus-server/uninstall.sh",
+        "usr/share/argus-server/README.txt",
+        "usr/share/argus-server/VERSION",
+        "DEBIAN/control",
+        "DEBIAN/postinst",
+        "DEBIAN/prerm",
+        "DEBIAN/postrm"
+      ],
+      "executables": [
+        "usr/share/argus-server/bin/argus-server",
+        "usr/share/argus-server/install.sh",
+        "usr/share/argus-server/uninstall.sh",
+        "DEBIAN/postinst",
+        "DEBIAN/prerm",
+        "DEBIAN/postrm"
+      ]
+    },
+    {
+      "name": "argus-desktop_*_amd64.deb",
+      "kind": "deb",
+      "allow": [
+        "usr/share/doc/argus-desktop/LICENSE.txt",
+        "usr/share/doc/argus-desktop/THIRD-PARTY-NOTICES.txt",
+        "usr/bin/argus-desktop",
+        "usr/share/applications/argus-desktop.desktop",
+        "usr/share/icons/hicolor/*/apps/argus-desktop.png",
+        "DEBIAN/control",
+        "DEBIAN/md5sums"
+      ],
+      "executables": [
+        "usr/bin/argus-desktop"
+      ]
+    },
+    {
+      "name": "argus-desktop-windows-x64.exe",
+      "kind": "binary",
+      "allow": [],
+      "executables": []
+    },
+    {
+      "name": "argus-instinct-windows-x64.zip",
+      "kind": "zip",
+      "allow": [
+        "ARGUS-INSTINCT/engine/argus-instinct.exe",
+        "ARGUS-INSTINCT/engine/*.dll",
+        "ARGUS-INSTINCT/engine/**/*.dll",
+        "ARGUS-INSTINCT/engine/*.pyd",
+        "ARGUS-INSTINCT/engine/**/*.pyd",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.html",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.js",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.css",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.woff2",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.txt",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.png",
+        "ARGUS-INSTINCT/engine/argus/web/static/**/*.svg", "ARGUS-INSTINCT/engine/argus/web/static/vendor/world-50m.json",
+        "ARGUS-INSTINCT/engine/argus/web/styles/*.css",
+        "ARGUS-INSTINCT/engine/argus/intel/data/*.json",
+        "ARGUS-INSTINCT/engine/argus/lab/scenarios/*.json",
+        "ARGUS-INSTINCT/engine/windows-sysmon/*.xml",
+        "ARGUS-INSTINCT/README.txt",
+        "ARGUS-INSTINCT/VERSION"
+      ],
+      "executables": []
+    },
+    {
+      "name": "ARGUS-INSTINCT-Setup-windows-x64.exe",
+      "kind": "nsis",
+      "allow": [
+        "engine/argus-instinct.exe",
+        "engine/*.dll",
+        "engine/**/*.dll",
+        "engine/*.pyd",
+        "engine/**/*.pyd",
+        "engine/argus/web/static/**/*.html",
+        "engine/argus/web/static/**/*.js",
+        "engine/argus/web/static/**/*.css",
+        "engine/argus/web/static/**/*.woff2",
+        "engine/argus/web/static/**/*.txt",
+        "engine/argus/web/static/**/*.png",
+        "engine/argus/web/static/**/*.svg", "engine/argus/web/static/vendor/world-50m.json",
+        "engine/argus/web/styles/*.css",
+        "engine/argus/intel/data/*.json",
+        "engine/argus/lab/scenarios/*.json",
+        "engine/windows-sysmon/*.xml",
+        "argus-desktop.exe",
+        "README.txt",
+        "VERSION",
+        "$PLUGINSDIR/*.dll",
+        "$PLUGINSDIR/modern-wizard.bmp",
+        "Uninstall.exe"
+      ],
+      "executables": []
+    }
+  ],
+  "deny_suffixes": [
+    ".py",
+    ".pyc",
+    ".pyo",
+    ".pyi",
+    ".pyw",
+    ".pyx",
+    ".pxd",
+    ".ipynb",
+    ".ps1",
+    ".psm1",
+    ".psd1",
+    ".cs",
+    ".csproj",
+    ".sln",
+    ".vb",
+    ".rs",
+    ".c",
+    ".cc",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".go",
+    ".java",
+    ".kt",
+    ".swift",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".svelte",
+    ".vue",
+    ".map",
+    ".toml",
+    ".lock",
+    ".cfg",
+    ".ini",
+    ".env",
+    ".md",
+    ".rst",
+    ".pem",
+    ".key",
+    ".p12",
+    ".pfx",
+    ".jks",
+    ".kdbx",
+    ".sqlite",
+    ".db",
+    ".patch",
+    ".diff",
+    ".orig",
+    ".rej",
+    ".bak",
+    ".swp"
+  ],
+  "deny_path_parts": [
+    ".git",
+    ".github",
+    "tests",
+    "test",
+    "__pycache__",
+    "node_modules",
+    "docs",
+    "prompts",
+    ".agents",
+    ".claude",
+    ".vscode",
+    ".idea",
+    "target",
+    "src"
+  ],
+  "_markers_comment": "Searched in every file's bytes, binaries included. Home-folder markers refuse any user's home path except a short list of placeholder names (u, x, alice, Public, ...) that Argus's own detection rules and self-tests use as examples; build-path markers name our CI environments. A private-key header counts only with key material after it, with real or escaped (\\\\n) newlines, so a scanner's own rules may name the header. Third-party libraries get no exemption: their maintainers' paths (/github/home/, /opt/_internal/) are not home folders and are not ours. A Windows home seen through a WSL mount (/mnt/c/Users/<name>/) is a home folder too: the macOS and Windows markers missed it because of the drive letter before /Users, and the 2026.10.30-2 server release shipped one (2026-11-02).",
+  "deny_markers": [
+    {
+      "id": "home-path",
+      "regex": "(?<![A-Za-z0-9_])/home/(?!(?:u|x|a|b|user|you|alice|bob|ubuntu|example)/)[A-Za-z_][A-Za-z0-9_.-]*/"
+    },
+    {
+      "id": "build-path",
+      "regex": "(?<![A-Za-z0-9_])(?:/github/workspace/|/__w/|/tmp/argus-(?:server|desktop)-|/root/\\.(?:cargo|rustup|cache)/)"
+    },
+    {
+      "id": "macos-home-path",
+      "regex": "(?<![A-Za-z0-9_])/Users/(?!(?:Shared|u|x|a|user|you|example)/)[A-Za-z_][A-Za-z0-9_.-]*/"
+    },
+    {
+      "id": "windows-home-path",
+      "regex": "(?i)[A-Z]:\\\\Users\\\\(?!(?:u|x|a|b|user|you|alice|bob|example|Public|Default|All Users)\\\\)[A-Za-z_][A-Za-z0-9_.-]*\\\\"
+    },
+    {
+      "id": "wsl-windows-home-path",
+      "regex": "(?i)(?<![A-Za-z0-9_])/mnt/[a-z]/Users/(?!(?:u|x|a|b|user|you|alice|bob|example|Public|Default|All Users)/)[A-Za-z_][A-Za-z0-9_.-]*/"
+    },
+    {
+      "id": "windows-build-path",
+      "regex": "(?i)(?:[A-Z]:\\\\a\\\\[A-Za-z0-9_.-]+\\\\|[A-Z]:\\\\actions-runner\\\\)"
+    },
+    {
+      "id": "private-key",
+      "regex": "-----BEGIN [A-Z ]*PRIVATE KEY-----(?:\\r?\\n|\\\\(?:r\\\\)?n)(?:[A-Za-z0-9-]+: [^\\n\\\\]*(?:\\r?\\n|\\\\(?:r\\\\)?n))*(?:\\r?\\n|\\\\(?:r\\\\)?n)?[A-Za-z0-9+/=]{40}"
+    },
+    {
+      "id": "github-token",
+      "regex": "\\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36}\\b|\\bgithub_pat_[A-Za-z0-9_]{60,}\\b"
+    },
+    {
+      "id": "aws-key",
+      "regex": "\\bAKIA[0-9A-Z]{16}\\b"
+    },
+    {
+      "id": "slack-token",
+      "regex": "\\bxox[abposr]-[A-Za-z0-9-]{10,}"
+    },
+    {
+      "id": "source-map",
+      "regex": "sourceMappingURL="
+    },
+    {
+      "id": "python-source-header",
+      "regex": "^#!/usr/bin/env python|^# -\\*- coding"
+    }
+  ],
+  "_python_comment": "Byte signatures of Python source or bytecode hidden in an allowed file (a renamed .pyc, a zip appended to a binary). Magic numbers: 3.10 (6f 0d), 3.11 (a7 0d), 3.12 (cb 0d), 3.13 (f3 0d), each followed by \\r\\n.",
+  "deny_bytecode_magic": [
+    "6f0d0d0a",
+    "a70d0d0a",
+    "cb0d0d0a",
+    "f30d0d0a"
+  ],
+  "max_file_count_growth": 0.25,
+  "explained_growth": [
+    {"artifact": "argus-server-linux-x86_64.tar.gz", "previous": 79, "max": 106, "reason": "the dashboard's 27 web files (web/static, styles), missing from 2026.11.03-0: Path.glob('dir/**') found no files on Python 3.12"},
+    {"artifact": "argus-server_*_amd64.deb", "previous": 83, "max": 110, "reason": "the dashboard's 27 web files (web/static, styles), missing from 2026.11.03-0: Path.glob('dir/**') found no files on Python 3.12"},
+    {"artifact": "argus-instinct-windows-x64.zip", "previous": 34, "max": 61, "reason": "the dashboard's 27 web files (web/static, styles), missing from 2026.11.03-0: Path.glob('dir/**') found no files on Python 3.12"},
+    {"artifact": "ARGUS-INSTINCT-Setup-windows-x64.exe", "previous": 40, "max": 67, "reason": "the dashboard's 27 web files (web/static, styles), missing from 2026.11.03-0: Path.glob('dir/**') found no files on Python 3.12"},
+    {"artifact": "argus-desktop_*_amd64.deb", "previous": 6, "max": 8, "reason": "the EULA (usr/share/doc/argus-desktop/LICENSE.txt) and THIRD-PARTY-NOTICES.txt, added to every artifact by 31f9f48 after 2026.11.03-0"}
+  ],
+  "_third_party_comment": "Reviewed upstream build paths inside third-party binaries of the Windows engine: python.org's CPython 3.12 release build (D:\\\\a\\\\1\\\\), the OpenSSL it ships (C:\\\\A\\\\_work\\\\) the Microsoft C++ runtime it ships (D:\\\\a\\\\_work\\\\) and the pinned cryptography wheel built on its maintainers' GitHub runner. Each entry exempts one exact matched text in the named files only; every other match in those files, and the same text in any other file (our own program included), is still refused. Changing this list needs the same two-person review as a release.",
+  "third_party_markers": [
+    {
+      "marker": "windows-build-path",
+      "text": "D:\\a\\1\\",
+      "members": [
+        "**/engine/python3.dll",
+        "**/engine/python312.dll",
+        "**/engine/pyexpat.pyd",
+        "**/engine/_bz2.pyd",
+        "**/engine/_ctypes.pyd",
+        "**/engine/_decimal.pyd",
+        "**/engine/_elementtree.pyd",
+        "**/engine/_hashlib.pyd",
+        "**/engine/_lzma.pyd",
+        "**/engine/_socket.pyd",
+        "**/engine/_sqlite3.pyd",
+        "**/engine/_ssl.pyd",
+        "**/engine/_uuid.pyd",
+        "**/engine/_wmi.pyd",
+        "**/engine/select.pyd",
+        "**/engine/unicodedata.pyd",
+        "**/engine/sqlite3.dll"
+      ],
+      "why": "python.org CPython 3.12 Windows release build agent"
+    },
+    {
+      "marker": "windows-build-path",
+      "text": "C:\\A\\_work\\",
+      "members": [
+        "**/engine/libcrypto-3.dll",
+        "**/engine/libssl-3.dll"
+      ],
+      "why": "OpenSSL 3 as built for and shipped with python.org CPython"
+    },
+    {
+      "marker": "windows-build-path",
+      "text": "D:\\a\\cryptography\\",
+      "members": [
+        "**/engine/cryptography/hazmat/bindings/_rust.pyd"
+      ],
+      "why": "pinned cryptography wheel (release/requirements-runtime.txt), built by its maintainers' CI"
+    },
+    {
+      "marker": "windows-build-path",
+      "text": "D:\\a\\infra\\",
+      "members": [
+        "**/engine/cryptography/hazmat/bindings/_rust.pyd"
+      ],
+      "why": "pinned cryptography wheel, built by its maintainers' CI (second checkout path)"
+    },
+    {
+      "marker": "windows-home-path",
+      "text": "C:\\Users\\runneradmin\\",
+      "members": [
+        "**/engine/cryptography/hazmat/bindings/_rust.pyd"
+      ],
+      "why": "pinned cryptography wheel, built by its maintainers' CI (GitHub runner account)"
+    },
+    {
+      "marker": "windows-build-path",
+      "text": "D:\\a\\_work\\",
+      "members": [
+        "**/engine/vcruntime140.dll",
+        "**/engine/vcruntime140_1.dll"
+      ],
+      "why": "Microsoft Visual C++ runtime redistributable, as shipped with python.org CPython"
+    }
+  ]
+}

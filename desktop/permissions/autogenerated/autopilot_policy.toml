@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-autopilot-policy"
+description = "Enables the autopilot_policy command without any pre-configured scope."
+commands.allow = ["autopilot_policy"]
+
+[[permission]]
+identifier = "deny-autopilot-policy"
+description = "Denies the autopilot_policy command without any pre-configured scope."
+commands.deny = ["autopilot_policy"]

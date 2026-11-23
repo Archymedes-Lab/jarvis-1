@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-procs-snapshot"
+description = "Enables the procs_snapshot command without any pre-configured scope."
+commands.allow = ["procs_snapshot"]
+
+[[permission]]
+identifier = "deny-procs-snapshot"
+description = "Denies the procs_snapshot command without any pre-configured scope."
+commands.deny = ["procs_snapshot"]

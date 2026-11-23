@@ -1,0 +1,26 @@
+{
+  // The sealed relay and the phone app (docs/architecture/ARGUS-NOTIFY.md).
+  "name": "argus-notify",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "account_id": "403e1436a8490c86a5c1ba912180c032",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "argus.archymedes.xyz", "custom_domain": true }],
+  // Request bodies and envelopes are ciphertext; no request logging.
+  "observability": { "enabled": false },
+  "assets": { "directory": "./public", "binding": "ASSETS", "not_found_handling": "single-page-application",
+              "run_worker_first": ["/v1/*"] },
+  "durable_objects": { "bindings": [
+    { "name": "MAILBOX", "class_name": "Mailbox" },
+    { "name": "PAIR", "class_name": "PairSlot" }
+  ] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Mailbox", "PairSlot"] }],
+  // Per-IP request limits at the edge (Workers rate limiting).
+  "ratelimits": [
+    { "name": "RL_PAIR", "namespace_id": "4401", "simple": { "limit": 60, "period": 60 } },
+    { "name": "RL_API", "namespace_id": "4402", "simple": { "limit": 300, "period": 60 } }
+  ],
+  "vars": { "VAPID_SUBJECT": "https://argus.archymedes.xyz", "VAPID_PUBLIC": "BM4MVNZ8YqEmFR6aentNhPYe29zl81Lfa2clTgnu4A2qpDWtC4QwZpmpDlI3nMtehi6aoVd2CHQf-zHgJlCQozI" }
+  // VAPID_PRIVATE is a secret: `wrangler secret put VAPID_PRIVATE` (a P-256 JWK).
+}

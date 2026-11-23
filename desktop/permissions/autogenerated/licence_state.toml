@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-licence-state"
+description = "Enables the licence_state command without any pre-configured scope."
+commands.allow = ["licence_state"]
+
+[[permission]]
+identifier = "deny-licence-state"
+description = "Denies the licence_state command without any pre-configured scope."
+commands.deny = ["licence_state"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-score-coach"
+description = "Enables the score_coach command without any pre-configured scope."
+commands.allow = ["score_coach"]
+
+[[permission]]
+identifier = "deny-score-coach"
+description = "Denies the score_coach command without any pre-configured scope."
+commands.deny = ["score_coach"]

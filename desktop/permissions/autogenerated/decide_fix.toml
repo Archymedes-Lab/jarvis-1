@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-decide-fix"
+description = "Enables the decide_fix command without any pre-configured scope."
+commands.allow = ["decide_fix"]
+
+[[permission]]
+identifier = "deny-decide-fix"
+description = "Denies the decide_fix command without any pre-configured scope."
+commands.deny = ["decide_fix"]

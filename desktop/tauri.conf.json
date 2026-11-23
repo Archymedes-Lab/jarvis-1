@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ARGUS-INSTINCT",
+  "mainBinaryName": "jarvis-desktop",
+  "version": "2.0.0",
+  "identifier": "local.jarvis.desktop",
+  "build": {
+    "frontendDist": "ui/dist"
+  },
+  "app": {
+    "windows": [],
+    "withGlobalTauri": false,
+    "security": {
+      "capabilities": [
+        "main"
+      ],
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self'",
+        "img-src": "'self' data:",
+        "font-src": "'self'",
+        "connect-src": "ipc: http://ipc.localhost",
+        "object-src": "'none'",
+        "base-uri": "'none'",
+        "form-action": "'none'",
+        "frame-ancestors": "'none'"
+      },
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "Archymedes",
+    "shortDescription": "ARGUS-INSTINCT desktop",
+    "longDescription": "Native window, tray and notifications for the local ARGUS-INSTINCT daemon. The daemon does the monitoring; this app only shows it and passes on your explicit decisions.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "skip"
+      },
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

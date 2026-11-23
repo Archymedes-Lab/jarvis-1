@@ -1,0 +1,24 @@
+{
+  "name": "jarvis-evidence-witness",
+  "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "check": "tsc --noEmit",
+    "build": "wrangler deploy --dry-run --outdir .build",
+    "dev": "wrangler dev --ip 127.0.0.1 --port 9455",
+    "deploy": "wrangler deploy",
+    "whoami": "wrangler whoami"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261001.1",
+    "typescript": "5.9.3",
+    "wrangler": "4.128.0",
+    "@types/bun": "1.4.2"
+  },
+  "overrides": {
+    "sharp": "0.35.5",
+    "undici": "7.30.1"
+  }
+}

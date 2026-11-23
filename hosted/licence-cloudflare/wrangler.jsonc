@@ -1,0 +1,38 @@
+{
+  // pay.archymedes.xyz: Stripe Checkout for Argus and the licence service the Argus client
+  // calls (docs/BILLING.md, docs/STRIPE-HANDOFF.md). Stripe is the merchant of record
+  // (Managed Payments). No secret is ever needed by a customer machine.
+  "name": "argus-licence",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "account_id": "403e1436a8490c86a5c1ba912180c032",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "pay.archymedes.xyz", "custom_domain": true }],
+  // Requests carry licence keys and Stripe payloads with emails: no request logging.
+  "observability": { "enabled": false },
+  // Daily: delete licence records one year after the licence ended (src/retention.ts).
+  "triggers": { "crons": ["17 3 * * *"] },
+  "d1_databases": [
+    // Created 2026-11-05 with `wrangler d1 create argus-licence` (region WEUR).
+    { "binding": "DB", "database_name": "argus-licence", "database_id": "9326e139-6234-4db4-aebb-cb219a60df4f" }
+  ],
+  // Per-IP request limits at the edge (Workers rate limiting).
+  "ratelimits": [
+    { "name": "RL_BUY", "namespace_id": "4411", "simple": { "limit": 30, "period": 60 } },
+    { "name": "RL_LICENCE", "namespace_id": "4412", "simple": { "limit": 60, "period": 60 } },
+    // Routes that send email (/recover, /manage/link); D1 also throttles per email (3 an hour).
+    { "name": "RL_EMAIL", "namespace_id": "4413", "simple": { "limit": 5, "period": 60 } }
+  ],
+  "vars": {
+    "SITE_ORIGIN": "https://www.archymedes.xyz",
+    "PAY_ORIGIN": "https://pay.archymedes.xyz",
+    "SUPPORT_EMAIL": "support@archymedes.xyz",
+    "MANAGED_PAYMENTS": "1",
+    "MAIL_FROM": "Archymedes <licences@archymedes.xyz>"
+  }
+  // Secrets (never in this file): `wrangler secret put STRIPE_SECRET_KEY` (sk_ or rk_),
+  // `wrangler secret put STRIPE_WEBHOOK_SECRET` (whsec_), `wrangler secret put RESEND_API_KEY`,
+  // `wrangler secret put LICENCE_SIGNING_KEY` (from scripts/licence-keygen.ts) and
+  // `wrangler secret put KEY_PEPPER` (32+ random characters). docs/STRIPE-HANDOFF.md, "Signing keys".
+}

@@ -1,0 +1,14 @@
+# /etc/sudoers.d/jarvis-restart   (install with mode 0440, via visudo -cf)
+#
+# The out-of-daemon watchdog runs unprivileged as a user timer. The only thing
+# it cannot do without help is restart the system-scoped jarvis.service, so it
+# is granted exactly two verbs on exactly that one unit — no wildcards, no
+# other units, no shell.
+#
+# This is a deliberate, bounded privilege grant. `systemctl restart` on a
+# single named unit cannot be turned into arbitrary root execution the way a
+# blanket `systemctl *` rule could: the unit file itself is root-owned in
+# /etc/systemd/system and this rule does not permit editing it, daemon-reload,
+# or link/enable of a new unit.
+chris ALL=(root) NOPASSWD: /usr/bin/systemctl restart jarvis.service, \
+                           /usr/bin/systemctl reset-failed jarvis.service

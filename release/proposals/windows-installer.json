@@ -1,0 +1,34 @@
+{
+  "_comment": "PROPOSAL, not policy. Adds one artifact rule so the gate can inspect Argus-Setup.exe. It cannot loosen anything: the global deny lists (suffixes, path parts, markers, bytecode magic) still apply to every member. Needs the same two-person review as a change to release/policy.json before it is merged into it. Until then a tagged release build refuses Argus-Setup.exe (deny by default); only release-test/* dry runs load this file. The allow list is the member list 7z shows for an NSIS installer built by release/build_windows.py: tune it against the first dry run's report, never widen it to patterns that admit source.",
+  "artifacts": [
+    {
+      "name": "Argus-Setup.exe",
+      "kind": "nsis",
+      "allow": [
+        "argus.exe",
+        "argus-desktop.exe",
+        "*.dll",
+        "*.pyd",
+        "**/*.dll",
+        "**/*.pyd",
+        "argus/web/static/**/*.html",
+        "argus/web/static/**/*.js",
+        "argus/web/static/**/*.css",
+        "argus/web/static/**/*.woff2",
+        "argus/web/static/**/*.txt",
+        "argus/web/static/**/*.png",
+        "argus/web/static/**/*.svg",
+        "argus/web/styles/*.css",
+        "argus/intel/data/*.json",
+        "argus/lab/scenarios/*.json",
+        "$PLUGINSDIR/*.dll",
+        "[NSIS].nsi",
+        "$PLUGINSDIR/*.bmp",
+        "$PLUGINSDIR/*.ico",
+        "argus/web/static/**/*.json",
+        "Uninstall.exe"
+      ],
+      "executables": []
+    }
+  ]
+}

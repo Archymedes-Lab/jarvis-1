@@ -1,0 +1,69 @@
+#!/usr/bin/python3 -I
+"""Root-owned, fixed-operation repair helper. Never imports the user checkout."""
+import json
+import os
+import subprocess
+import sys
+
+ACTIONS = ('status','monitor','telemetry','journal','mount','all')
+
+
+def mount_owner():
+    """(uid, gid) of the account that invoked this helper through sudo, or None.
+
+    sudo sets SUDO_UID/SUDO_GID itself; the caller cannot choose them. The mount
+    is given to that account, the one running JARVIS, never a fixed name."""
+    try:
+        uid, gid = int(os.environ['SUDO_UID']), int(os.environ['SUDO_GID'])
+    except (KeyError, ValueError):
+        return None
+    if uid <= 0 or gid < 0:
+        return None
+    return uid, gid
+
+
+def run(args, timeout=30):
+    try:
+        result = subprocess.run(args, capture_output=True, text=True, timeout=timeout,
+                                cwd='/', env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LANG':'C.UTF-8'})
+    except subprocess.TimeoutExpired:
+        return {'command':args,'code':124,'output':'Timed out'}
+    return {'command':args, 'code':result.returncode, 'output':(result.stdout+result.stderr)[-2000:]}
+
+
+def repair(action):
+    results=[]
+    if action in ('status','all','mount'):
+        mount=run(['/usr/bin/stat','/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe'],8)
+        results.append(mount)
+        if action != 'status' and mount['code']:
+            owner=mount_owner()
+            if owner is None:
+                results.append({'command':['mount'],'code':1,'output':
+                                'refusing to mount: not run through sudo, so the owning account is unknown'})
+            else:
+                results.append(run(['/usr/bin/mount','-t','drvfs','C:','/mnt/c','-o',
+                                    f'uid={owner[0]},gid={owner[1]}'],30))
+    services={'monitor':'jarvis.service','telemetry':'sysmon.service','journal':'systemd-journald.service'}
+    for name,unit in services.items():
+        if action not in ('status','all',name):continue
+        current=run(['/usr/bin/systemctl','is-active',unit],10)
+        if action != 'status' and (action == name or current['code']):
+            results.append(run(['/usr/bin/systemctl','restart',unit]))
+            current=run(['/usr/bin/systemctl','is-active',unit],10)
+        results.append(current)
+    return results
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2 or sys.argv[1] not in ACTIONS:
+        sys.exit('usage: jarvis-repair '+ '|'.join(ACTIONS))
+    if os.geteuid() != 0:sys.exit('This installed helper requires sudo.')
+    try:
+        result=repair(sys.argv[1]);print(json.dumps(result,indent=2))
+        # Historical failed probes are included, but verify final service/mount
+        # state after attempted repairs before deciding success.
+        if sys.argv[1] != 'status':result=repair('status')
+        sys.exit(1 if any(r['code'] for r in result) else 0)
+    except (OSError,subprocess.SubprocessError,KeyError) as e:
+        sys.exit(str(e))

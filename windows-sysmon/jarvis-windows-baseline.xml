@@ -1,0 +1,328 @@
+<!--
+  JARVIS Windows Sysmon baseline, schema 4.90.
+
+  Design: preserve complete ProcessCreate evidence for identity reconciliation;
+  collect high-signal persistence, credential-access, injection, and public
+  network metadata; avoid broad RegistryEvent collection that previously
+  overflowed the Sysmon driver queue. This does not capture document content,
+  clipboard content, or network payloads.
+-->
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>SHA256</HashAlgorithms>
+  <CheckRevocation>False</CheckRevocation>
+  <DnsLookup>False</DnsLookup>
+  <EventFiltering>
+    <!-- Empty exclude means every process creation is recorded. -->
+    <ProcessCreate onmatch="exclude" />
+    <!-- Terminations are useful for user-launched and device-backed processes;
+         logging every service termination adds volume but not reconciliation value. -->
+    <ProcessTerminate onmatch="include">
+      <Image condition="begin with">C:\Users\</Image>
+      <Image condition="begin with">\Device\</Image>
+    </ProcessTerminate>
+
+    <!-- Network metadata, excluding local-only traffic. -->
+    <NetworkConnect onmatch="exclude">
+      <DestinationIp condition="begin with">10.</DestinationIp>
+      <DestinationIp condition="begin with">127.</DestinationIp>
+      <DestinationIp condition="begin with">169.254.</DestinationIp>
+      <DestinationIp condition="begin with">192.168.</DestinationIp>
+      <DestinationIp condition="begin with">172.16.</DestinationIp>
+      <DestinationIp condition="begin with">172.17.</DestinationIp>
+      <DestinationIp condition="begin with">172.18.</DestinationIp>
+      <DestinationIp condition="begin with">172.19.</DestinationIp>
+      <DestinationIp condition="begin with">172.20.</DestinationIp>
+      <DestinationIp condition="begin with">172.21.</DestinationIp>
+      <DestinationIp condition="begin with">172.22.</DestinationIp>
+      <DestinationIp condition="begin with">172.23.</DestinationIp>
+      <DestinationIp condition="begin with">172.24.</DestinationIp>
+      <DestinationIp condition="begin with">172.25.</DestinationIp>
+      <DestinationIp condition="begin with">172.26.</DestinationIp>
+      <DestinationIp condition="begin with">172.27.</DestinationIp>
+      <DestinationIp condition="begin with">172.28.</DestinationIp>
+      <DestinationIp condition="begin with">172.29.</DestinationIp>
+      <DestinationIp condition="begin with">172.30.</DestinationIp>
+      <DestinationIp condition="begin with">172.31.</DestinationIp>
+      <DestinationIp condition="is">::1</DestinationIp>
+      <DestinationIp condition="begin with">fe80:</DestinationIp>
+      <DestinationIp condition="begin with">fc</DestinationIp>
+      <DestinationIp condition="begin with">fd</DestinationIp>
+    </NetworkConnect>
+
+    <CreateRemoteThread onmatch="exclude" />
+    <ProcessAccess onmatch="include">
+      <TargetImage condition="end with">\lsass.exe</TargetImage>
+      <TargetImage condition="end with">\lsaiso.exe</TargetImage>
+      <!-- Browser memory holds decrypted cookies and session tokens
+           (ChromeKatz-style theft reads them without touching a file).
+           Added 2026-10-22: a browser's own processes opening each other
+           are its sandbox and are not recorded; everything else is. -->
+      <Rule groupRelation="and">
+        <TargetImage condition="end with">\chrome.exe</TargetImage>
+        <SourceImage condition="excludes">\chrome.exe</SourceImage>
+      </Rule>
+      <Rule groupRelation="and">
+        <TargetImage condition="end with">\msedge.exe</TargetImage>
+        <SourceImage condition="excludes">\msedge.exe</SourceImage>
+      </Rule>
+      <Rule groupRelation="and">
+        <TargetImage condition="end with">\firefox.exe</TargetImage>
+        <SourceImage condition="excludes">\firefox.exe</SourceImage>
+      </Rule>
+      <Rule groupRelation="and">
+        <TargetImage condition="end with">\brave.exe</TargetImage>
+        <SourceImage condition="excludes">\brave.exe</SourceImage>
+      </Rule>
+    </ProcessAccess>
+    <!-- Unsigned images only. Added 2026-10-22 so the side-load and unsigned
+         DLL detectors can fire; signed loads are the bulk of boot volume and
+         stay unrecorded so the driver queue is not refilled at boot. -->
+    <ImageLoad onmatch="include">
+      <Signed condition="is">false</Signed>
+    </ImageLoad>
+    <DriverLoad onmatch="exclude" />
+    <ProcessTampering onmatch="exclude" />
+
+    <!-- Persistence and executable/script creation only. -->
+    <FileCreate onmatch="include">
+      <TargetFilename condition="contains">\Start Menu\Programs\Startup\</TargetFilename>
+      <TargetFilename condition="contains">\Windows\System32\Tasks\</TargetFilename>
+      <TargetFilename condition="contains">\Windows\System32\drivers\</TargetFilename>
+      <TargetFilename condition="contains">\Users\Public\</TargetFilename>
+      <TargetFilename condition="contains">\Users\Default\</TargetFilename>
+      <TargetFilename condition="contains">\Downloads\</TargetFilename>
+      <!-- The VM configuration (custom kernel, networking) and Windows-side
+           writes into the distro over the \\wsl.localhost share. Added
+           2026-10-21; the share path format and volume are unmeasured. -->
+      <TargetFilename condition="end with">\.wslconfig</TargetFilename>
+      <TargetFilename condition="contains">\wsl.localhost\</TargetFilename>
+      <TargetFilename condition="contains">\wsl$\</TargetFilename>
+    </FileCreate>
+    <FileCreateStreamHash onmatch="include">
+      <TargetFilename condition="contains">\Downloads\</TargetFilename>
+      <TargetFilename condition="end with">.exe</TargetFilename>
+      <TargetFilename condition="end with">.dll</TargetFilename>
+      <TargetFilename condition="end with">.ps1</TargetFilename>
+      <TargetFilename condition="end with">.js</TargetFilename>
+      <TargetFilename condition="end with">.vbs</TargetFilename>
+      <TargetFilename condition="end with">.hta</TargetFilename>
+    </FileCreateStreamHash>
+    <FileDeleteDetected onmatch="include">
+      <TargetFilename condition="contains">\Windows\System32\winevt\Logs\</TargetFilename>
+      <TargetFilename condition="contains">\Start Menu\Programs\Startup\</TargetFilename>
+      <TargetFilename condition="end with">.ps1</TargetFilename>
+    </FileDeleteDetected>
+
+    <!-- Narrow registry collection prevents the previous driver-queue flood.
+         Include and exclude for one event type need separate rule groups;
+         Sysmon applies the exclude group first. -->
+    <RuleGroup name="registry-persistence" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <TargetObject condition="contains">\CurrentVersion\Run</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\RunOnce</TargetObject>
+        <!-- Services: persistence lives in these values, not in the whole subtree.
+             The bare \Services\ include was 93% of retained registry volume
+             (7 days to 2026-10-27, 43273 of 46582: Tcpip, hns/vmsmp, Dnscache,
+             TriggerInfo, TPM WMI state) and boot 187 still overflowed the 50000
+             driver queue, dropping 102 ProcessCreate. Replay keeps 18.4% of it. -->
+        <Rule name="service-imagepath" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ImagePath</TargetObject>
+        </Rule>
+        <Rule name="service-servicedll" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ServiceDll</TargetObject>
+        </Rule>
+        <Rule name="service-start" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\Start</TargetObject>
+        </Rule>
+        <Rule name="service-type" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\Type</TargetObject>
+        </Rule>
+        <Rule name="service-failurecommand" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\FailureCommand</TargetObject>
+        </Rule>
+        <Rule name="service-failureactions" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\FailureActions</TargetObject>
+        </Rule>
+        <Rule name="service-objectname" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ObjectName</TargetObject>
+        </Rule>
+        <Rule name="service-security" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\Security</TargetObject>
+        </Rule>
+        <Rule name="service-requiredprivileges" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\RequiredPrivileges</TargetObject>
+        </Rule>
+        <Rule name="service-dependonservice" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\DependOnService</TargetObject>
+        </Rule>
+        <Rule name="service-servicemain" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ServiceMain</TargetObject>
+        </Rule>
+        <Rule name="service-group" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\Group</TargetObject>
+        </Rule>
+        <Rule name="service-launchprotected" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\LaunchProtected</TargetObject>
+        </Rule>
+        <Rule name="service-delayedautostart" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\DelayedAutostart</TargetObject>
+        </Rule>
+        <Rule name="service-servicesidtype" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ServiceSidType</TargetObject>
+        </Rule>
+        <!-- Service wrappers (srvany, NSSM) keep the real payload here, not in ImagePath. -->
+        <Rule name="service-application" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\Application</TargetObject>
+        </Rule>
+        <Rule name="service-appparameters" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\AppParameters</TargetObject>
+        </Rule>
+        <Rule name="service-appdirectory" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\AppDirectory</TargetObject>
+        </Rule>
+        <Rule name="service-nameserver" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\NameServer</TargetObject>
+        </Rule>
+        <Rule name="service-ntpserver" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\NtpServer</TargetObject>
+        </Rule>
+        <Rule name="service-databasepath" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\DataBasePath</TargetObject>
+        </Rule>
+        <Rule name="service-providerpath" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ProviderPath</TargetObject>
+        </Rule>
+        <Rule name="service-librarypath" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\LibraryPath</TargetObject>
+        </Rule>
+        <Rule name="service-packedcatalogitem" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\PackedCatalogItem</TargetObject>
+        </Rule>
+        <Rule name="service-dllname" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\DllName</TargetObject>
+        </Rule>
+        <Rule name="service-serverlevelplugindll" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\ServerLevelPluginDll</TargetObject>
+        </Rule>
+        <Rule name="service-nullsessionpipes" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\NullSessionPipes</TargetObject>
+        </Rule>
+        <Rule name="service-nullsessionshares" groupRelation="and">
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+          <TargetObject condition="end with">\NullSessionShares</TargetObject>
+        </Rule>
+        <!-- Whole subtrees whose every write matters: firewall policy and rules,
+             port proxies, and the configuration of the sensors JARVIS relies on. -->
+        <TargetObject condition="contains any">\Services\SharedAccess\Parameters\FirewallPolicy\;\Services\PortProxy\;\Services\SysmonDrv\;\Services\Sysmon64\;\Services\JarvisNativeSensor\;\Services\EventLog\</TargetObject>
+        <Rule name="service-removed" groupRelation="and">
+          <EventType condition="is">DeleteKey</EventType>
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+        </Rule>
+        <TargetObject condition="contains">\Windows NT\CurrentVersion\Winlogon</TargetObject>
+        <TargetObject condition="contains">\Image File Execution Options\</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\Policies\Explorer\Run</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\App Paths\</TargetObject>
+        <!-- Microphone, camera, location and screen-capture consent switches.
+             Added 2026-10-21 so a privacy seal reopened by software is
+             attributed to the writing process. -->
+        <TargetObject condition="contains">\CapabilityAccessManager\ConsentStore\</TargetObject>
+        <!-- WSL registration (user hive: DefaultUid, BasePath, Flags; machine
+             hive: service plugins) and the WSL policy key. Added 2026-10-21;
+             expected volume a few values per VM start (NatIpAddress, State). -->
+        <TargetObject condition="contains">\CurrentVersion\Lxss\</TargetObject>
+        <TargetObject condition="contains">\Policies\Microsoft\Windows\WSL</TargetObject>
+        <!-- Defence tampering and in-process persistence. Added 2026-10-22 so
+             the writer of an exclusion, a disabled real-time scan, a hijacked
+             COM server, an LSA package, an AMSI provider or a silenced event
+             trace session is recorded. Value families, not whole hives. -->
+        <TargetObject condition="contains">\Windows Defender\Exclusions\</TargetObject>
+        <TargetObject condition="contains">\Windows Defender\Real-Time Protection\</TargetObject>
+        <TargetObject condition="contains">\Policies\Microsoft\Windows Defender\</TargetObject>
+        <TargetObject condition="contains all">\CLSID\;\InprocServer32</TargetObject>
+        <TargetObject condition="contains all">\Control\Lsa\;Packages</TargetObject>
+        <TargetObject condition="contains">\Microsoft\AMSI\Providers\</TargetObject>
+        <!-- T1003 WDigest plaintext caching: the techniques rule read this key
+             but no include recorded it (found 2026-10-27 by the sample-coverage test). -->
+        <TargetObject condition="contains">\Control\SecurityProviders\WDigest\</TargetObject>
+        <TargetObject condition="contains all">\WMI\Autologger\;\Start</TargetObject>
+      </RegistryEvent>
+    </RuleGroup>
+    <!-- Measured 2026-09-22 (boot 94, 35,859 registry events): 97% were
+         these operations, none of which change security state.
+         * CreateKey under Services opens an existing key with create access
+           (24,929 on Tcpip\Parameters from every networked app). A new
+           service still appears through its ImagePath/ServiceDll SetValue.
+         * bam\State\UserSettings SetValue stamps every process launch
+           (~6,900); ProcessCreate above already records every launch, and
+           deleting BAM entries (anti-forensics) stays visible.
+         * W32Time secure-time estimates, SharedAccess epochs and VSS
+           diagnostics are counters. NtpServer and every other W32Time,
+           firewall and Tcpip value change (DNS NameServer) stay visible.
+         Only SetValue/CreateKey are excluded; DeleteKey, DeleteValue and
+         RenameKey anywhere in the include list are always recorded. -->
+    <RuleGroup name="registry-noise" groupRelation="or">
+      <RegistryEvent onmatch="exclude">
+        <Rule name="service-key-open" groupRelation="and">
+          <EventType condition="is">CreateKey</EventType>
+          <TargetObject condition="contains">\CurrentControlSet\Services\</TargetObject>
+        </Rule>
+        <Rule name="bam-launch-stamp" groupRelation="and">
+          <EventType condition="is">SetValue</EventType>
+          <TargetObject condition="contains">\Services\bam\State\UserSettings\</TargetObject>
+        </Rule>
+        <Rule name="w32time-estimate" groupRelation="and">
+          <EventType condition="is">SetValue</EventType>
+          <TargetObject condition="contains">\Services\W32Time\SecureTimeLimits\</TargetObject>
+        </Rule>
+        <Rule name="sharedaccess-epoch" groupRelation="and">
+          <EventType condition="is">SetValue</EventType>
+          <TargetObject condition="contains">\Services\SharedAccess\Epoch</TargetObject>
+        </Rule>
+        <Rule name="vss-diagnostics" groupRelation="and">
+          <EventType condition="is">SetValue</EventType>
+          <TargetObject condition="contains">\Services\VSS\Diag\</TargetObject>
+        </Rule>
+        <!-- Every app use stamps LastUsedTimeStart/Stop; the ledger is read
+             by the privacy collector, only the Allow/Deny switch is an event. -->
+        <Rule name="consent-use-stamp" groupRelation="and">
+          <EventType condition="is">SetValue</EventType>
+          <TargetObject condition="contains all">\CapabilityAccessManager\ConsentStore\;LastUsedTime</TargetObject>
+        </Rule>
+      </RegistryEvent>
+    </RuleGroup>
+
+    <WmiEvent onmatch="exclude" />
+    <PipeEvent onmatch="include">
+      <PipeName condition="contains any">\paexec;\remcom;\csexec;\lsadump;\cachedump;\wceservicepipe</PipeName>
+      <PipeName condition="begin with">\postex_</PipeName>
+    </PipeEvent>
+    <DnsQuery onmatch="exclude" />
+  </EventFiltering>
+</Sysmon>

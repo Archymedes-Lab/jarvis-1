@@ -1,0 +1,10 @@
+{
+ "comment": "Detection floor for scripts/security/atomic_bench.py, measured 2026-11-10 with the built-in rules plus the compiled Sigma subset (high and critical rules) the registry family watch and script-block rules on PowerShell tests. Built-in rules alone (--builtin-only): 392. Raise it in the change that raises detection; never lower it without a written reason in docs/security/DETECTION-BENCHMARK-2026-11-10.md.",
+ "index_commit": "a0e3f9bc69fed2fd711bd1f1aa87a40c33482fe6",
+ "index_sha256": "afa92a2c9b95b77d6ff0a318ae8000d9df04fc63101f87a7ac9fc6feb1fdf6f6",
+ "tests": 1745,
+ "any_finding": 707,
+ "win": 642,
+ "linux": 65,
+ "benign_findings": 0
+}

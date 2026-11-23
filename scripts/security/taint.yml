@@ -1,0 +1,37 @@
+rules:
+  - id: argus-untrusted-code-execution
+    languages: [python]
+    severity: ERROR
+    message: Untrusted input reaches code execution; review the data flow locally.
+    mode: taint
+    pattern-sources:
+      - pattern: $SELF._json_body(...)
+        exact: true
+      - pattern: input(...)
+        exact: true
+      - pattern: os.environ.get(...)
+        exact: true
+      - pattern: json.loads(...)
+        exact: true
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: eval($VALUE, ...)
+              - pattern: exec($VALUE, ...)
+              - pattern: os.system($VALUE)
+              - pattern: subprocess.$RUN($VALUE, ..., shell=True, ...)
+          - focus-metavariable: $VALUE
+  - id: argus-untrusted-sql
+    languages: [python]
+    severity: ERROR
+    message: Untrusted input reaches SQL query text; use bound parameters.
+    mode: taint
+    pattern-sources:
+      - pattern: $SELF._json_body(...)
+        exact: true
+      - pattern: input(...)
+        exact: true
+    pattern-sinks:
+      - patterns:
+          - pattern: $DB.execute($QUERY, ...)
+          - focus-metavariable: $QUERY

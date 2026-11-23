@@ -1,0 +1,42 @@
+[
+  {
+    "id": "selfdef-eventlog-segment-edited",
+    "title": "Attack on JARVIS: a sealed event-log segment is rewritten",
+    "platform": "win",
+    "safety": "synthetic",
+    "source": "synthetic",
+    "techniques": ["T1565.001", "T1070"],
+    "provider": "tamper",
+    "detector": "integrity",
+    "spec": {"mode": "edit"},
+    "expect": {"classified": {"category": "tampering", "min_severity": "critical", "title": "verify"}}
+  },
+  {
+    "id": "selfdef-eventlog-segment-deleted",
+    "title": "Attack on JARVIS: a sealed event-log segment is deleted outside retention",
+    "platform": "win",
+    "safety": "synthetic",
+    "source": "synthetic",
+    "techniques": ["T1070.001"],
+    "provider": "tamper",
+    "detector": "integrity",
+    "spec": {"mode": "delete"},
+    "expect": {"classified": {"category": "tampering", "min_severity": "critical", "title": "verify"}}
+  },
+  {
+    "id": "selfdef-sysmon-blinding-t1562",
+    "title": "Attack on JARVIS: flooding blinds Sysmon (driver queue overflow)",
+    "platform": "win",
+    "safety": "synthetic",
+    "source": "synthetic",
+    "techniques": ["T1562.001"],
+    "provider": "synthetic",
+    "detector": "sysmon",
+    "trigger_events": [255],
+    "spec": {"channel": "sysmon", "events": [
+      {"id": 255, "data": {"ID": "QUEUE",
+        "Description": "Events dropped from driver queue:  ProcessCreate:87 RegistryEvent:53563 CreateRemoteThread:4. DriverQueueSize: 50000, 46591536 bytes."}}
+    ]},
+    "expect": {"classified": {"category": "telemetry loss", "min_severity": "high", "title": "dropped"}}
+  }
+]

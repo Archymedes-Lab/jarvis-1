@@ -1,0 +1,61 @@
+{
+ "server": {
+  "mailbox": "NHUPmL1Z_PyUbaRaqr6TO-",
+  "s_sig": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+  "s_enc": "zo060cy2M-x7cMF4FKXHbs0CloUFDTRHRboFhw5YfVk"
+ },
+ "device": {
+  "dev": "ti6Gf6LzOv5i1daxZC4WId",
+  "d_enc": "rAGyIJ6GNU-4UyN7XeD0-rE8f8v0M6YcAZNpYX_s8Qs",
+  "d_sig": "7UkoxijRwsbq6QM4kFmVYSlZJzpcY_k2NsFGFKyHN9E",
+  "d_enc_priv": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+  "d_sig_priv": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM"
+ },
+ "payload": {
+  "kind": "alert",
+  "title": "web-1: known-exploited vulnerability fixed but not installed: openssh",
+  "body": "CVE-2024-6387 (CISA KEV) affect openssh 1:9.6p1-3ubuntu13.4 — é ✓",
+  "severity": "high",
+  "host": "web-1",
+  "at": 1792950000
+ },
+ "envelope": {
+  "v": 1,
+  "id": "AAECAwQFBgcICQoLDA0ODw",
+  "mb": "NHUPmL1Z_PyUbaRaqr6TO-",
+  "dev": "ti6Gf6LzOv5i1daxZC4WId",
+  "sent": 1792950000,
+  "expires": 1793554800,
+  "epk": "UKYUCbHd0DJemxa3AOcZ6XcsBwALG9d4bpB8ZT0gSV0",
+  "iv": "ZGVmZ2hpamtsbW5v",
+  "ct": "s8B1pTRDe2jI5DQtJUW41Rnp1yKv-bNMg_Yz8MDmGqKrIJlzBF9tLm9AYmloOZC2UEQVDKamqy73kvOa7Sd09cn2lwGJWGFwPZkoqgrdb7lSBue2AsEvX3r1GdXBfyopg4TG_msWUp6LGXjVyXhRKjmYe_REb95gQYcUVCdUiDPD01mmiEcdlpLByGFMT3sChiNawtT0ACJG3sdsZOIQrWRisHMUS0zmd2Bux6nFXRfmfPv7Q437uJvU6hozJv3XYEQr4ZIOWWnNwmomofB-uE9-ImKvGZ6WPWyOTHEIvoSGt6RvPXKMhTbAMWiF3KuZ2g",
+  "sig": "2T3Mn9HbPc_atIc2BoLvnP10qbziJiV2J3nX0AOMMme_Dk1DsqmHVCTo3Uk_DU67h59CJkL8VoG4k-SzG4kYBw"
+ },
+ "sas": "868015",
+ "request": {
+  "method": "POST",
+  "path": "/v1/mailbox/NHUPmL1Z_PyUbaRaqr6TO-/envelopes",
+  "body": "[{\"a\":1}]",
+  "headers": {
+   "X-Notify-Key": "iojj3XQJ8ZX9UtstPLpdcspnCb8dlBIb83SIAbQPb1w",
+   "X-Notify-Time": "1792950000",
+   "X-Notify-Nonce": "AAECAwQFBgcICQoLDA0ODw",
+   "X-Notify-Sig": "bx80e7gna9zsjJTxTFsjuATT2xCxMSQV4v0YlwhGsmfNzfVz38l70PTUM2gO66EieL16lwZeZfOgXEdnUtHQDw"
+  }
+ },
+ "approval": {
+  "approval_id": "AAAAAAAAAAAAAAAAAAAAAA",
+  "eid": "e1",
+  "action": "quarantine",
+  "target": "{'path': '/tmp/é'}",
+  "expires": 1800000600,
+  "challenge": "Ky-zavCjy9iYdCtyx9X8t4hlPcMc_jaBImqW1BF0Gos"
+ },
+ "qr_proof": {
+  "secret": "AAECAwQFBgcICQoLDA0ODw",
+  "d_sig": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "d_enc": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+  "passkey": "ZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1-f4CBgoOEhYaHiImKi4yNjo-QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vg",
+  "proof": "T0WWrT3r2YGSq9wg8IutoM2CwBaenitJtfRNcddtkkQ"
+ }
+}
